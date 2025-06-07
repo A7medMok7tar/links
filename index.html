@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Social Media Links</title>
+
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <style>
+    :root {
+      --text-color: var(--tg-theme-text-color, #000000);
+      --button-text-color: var(--tg-theme-button-text-color, #ffffff);
+
+      /* Animated Gradient Colors */
+      --gradient1: #00c6ff;
+      --gradient2: #0072ff;
+      --gradient3: #4facfe;
+      --gradient4: #00f2fe;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      color: var(--text-color);
+      margin: 0;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+
+      background: linear-gradient(-45deg, var(--gradient1), var(--gradient2), var(--gradient3), var(--gradient4));
+      background-size: 400% 400%;
+      animation: gradientShift 12s ease infinite;
+    }
+
+    @keyframes gradientShift {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    h1 {
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .social-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .social-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 1rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      color: var(--button-text-color);
+      background: rgba(0, 0, 0, 0.4); /* semi-transparent */
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s;
+    }
+
+    .social-button:hover {
+      transform: scale(1.04);
+    }
+
+    i {
+      font-size: 1.3rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Follow Us</h1>
+  <div class="social-buttons">
+    <button class="social-button" onclick="openLink('https://t.me/enjoymedteam')">
+      <i class="fab fa-telegram"></i> Telegram Account
+    </button>
+    <button class="social-button" onclick="openLink('https://t.me/enjoymed')">
+      <i class="fas fa-bullhorn"></i> Telegram Channel
+    </button>
+    <button class="social-button" onclick="openLink('https://facebook.com/your_page')">
+      <i class="fab fa-facebook-f"></i> Facebook Page
+    </button>
+    <button class="social-button" onclick="openLink('https://wa.me/your_number')">
+      <i class="fab fa-whatsapp"></i> WhatsApp
+    </button>
+  </div>
+
+  <script>
+    function openLink(url) {
+      window.open(url, "_blank");
+    }
+
+    if (window.Telegram && Telegram.WebApp) {
+      Telegram.WebApp.ready();
+      Telegram.WebApp.expand();
+
+      Telegram.WebApp.onEvent("themeChanged", () => {
+        const theme = Telegram.WebApp.themeParams;
+        document.documentElement.style.setProperty('--text-color', theme.text_color || '#000');
+        document.documentElement.style.setProperty('--button-text-color', theme.button_text_color || '#fff');
+      });
+    }
+  </script>
+</body>
+</html>
