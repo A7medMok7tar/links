@@ -10,12 +10,12 @@
 
   <style>
     :root {
-      --text-color: var(--tg-theme-text-color, #000000);
+      --text-color: var(--tg-theme-text-color, #ffffff);
       --button-text-color: var(--tg-theme-button-text-color, #ffffff);
-      --gradient1: #00c6ff;
-      --gradient2: #0072ff;
-      --gradient3: #4facfe;
-      --gradient4: #00f2fe;
+      --gradient1: #ff6ec4;
+      --gradient2: #7873f5;
+      --gradient3: #1dd1a1;
+      --gradient4: #ff9ff3;
     }
 
     body {
@@ -30,34 +30,34 @@
       min-height: 100vh;
 
       background: linear-gradient(-45deg, var(--gradient1), var(--gradient2), var(--gradient3), var(--gradient4));
-      background-size: 400% 400%;
-      animation: gradientShift 12s ease infinite;
+      background-size: 500% 500%;
+      animation: backgroundShift 8s ease infinite;
     }
 
-    @keyframes gradientShift {
+    @keyframes backgroundShift {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
 
     .logo-wrapper {
-      width: 160px;
-      height: 160px;
+      width: 180px;
+      height: 180px;
       border-radius: 50%;
-      padding: 5px;
-      background: linear-gradient(45deg, #00c6ff, #0072ff, #4facfe, #00f2fe);
+      padding: 6px;
+      background: conic-gradient(from 0deg, #ff6ec4, #7873f5, #1dd1a1, #ff9ff3, #ff6ec4);
       background-size: 300% 300%;
-      animation: borderAnimate 5s linear infinite;
+      animation: spinBorder 4s linear infinite;
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
       display: flex;
       align-items: center;
       justify-content: center;
       margin-bottom: 1.5rem;
     }
 
-    @keyframes borderAnimate {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+    @keyframes spinBorder {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
 
     .logo-wrapper img {
@@ -65,12 +65,15 @@
       height: 100%;
       border-radius: 50%;
       object-fit: cover;
-      border: 4px solid white;
+      border: 4px solid #ffffff;
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
     }
 
     h1 {
       margin-bottom: 2rem;
       text-align: center;
+      font-size: 2rem;
+      letter-spacing: 1px;
     }
 
     .social-buttons {
@@ -93,14 +96,15 @@
       font-weight: bold;
       cursor: pointer;
       color: var(--button-text-color);
-      background: rgba(0, 0, 0, 0.4);
-      backdrop-filter: blur(8px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      transition: transform 0.2s;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
     }
 
     .social-button:hover {
-      transform: scale(1.04);
+      transform: scale(1.07);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
     }
 
     i {
@@ -110,10 +114,9 @@
 </head>
 <body>
 
-  <!-- 👇 Logo with animated border -->
   <div class="logo-wrapper">
     <img src="logo.png" alt="Logo" />
-    <!-- Replace logo.png with your actual logo path -->
+    <!-- Replace 'logo.png' with your actual logo path -->
   </div>
 
   <h1>Follow Us</h1>
@@ -150,7 +153,7 @@
 
       Telegram.WebApp.onEvent("themeChanged", () => {
         const theme = Telegram.WebApp.themeParams;
-        document.documentElement.style.setProperty('--text-color', theme.text_color || '#000');
+        document.documentElement.style.setProperty('--text-color', theme.text_color || '#fff');
         document.documentElement.style.setProperty('--button-text-color', theme.button_text_color || '#fff');
       });
     }
