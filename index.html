@@ -12,7 +12,6 @@
     :root {
       --text-color: var(--tg-theme-text-color, #000000);
       --button-text-color: var(--tg-theme-button-text-color, #ffffff);
-
       --gradient1: #00c6ff;
       --gradient2: #0072ff;
       --gradient3: #4facfe;
@@ -39,6 +38,34 @@
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
+    }
+
+    .logo-wrapper {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      padding: 5px;
+      background: linear-gradient(45deg, #00c6ff, #0072ff, #4facfe, #00f2fe);
+      background-size: 300% 300%;
+      animation: borderAnimate 5s linear infinite;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+
+    @keyframes borderAnimate {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .logo-wrapper img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid white;
     }
 
     h1 {
@@ -82,15 +109,23 @@
   </style>
 </head>
 <body>
+
+  <!-- 👇 Logo with animated border -->
+  <div class="logo-wrapper">
+    <img src="logo.png" alt="Logo" />
+    <!-- Replace logo.png with your actual logo path -->
+  </div>
+
   <h1>Follow Us</h1>
+
   <div class="social-buttons">
-    <button class="social-button" onclick="openLink('https://t.me/enjoymedteam')">
+    <button class="social-button" onclick="openLink('https://t.me/your_account')">
       <i class="fab fa-telegram"></i> Telegram Account
     </button>
-    <button class="social-button" onclick="openLink('https://t.me/enjoymed')">
+    <button class="social-button" onclick="openLink('https://t.me/your_channel')">
       <i class="fas fa-bullhorn"></i> Telegram Channel
     </button>
-    <button class="social-button" onclick="openLink('https://t.me/enjoymedquiz')">
+    <button class="social-button" onclick="openLink('https://t.me/your_quiz_channel')">
       <i class="fas fa-question-circle"></i> Quiz Channel
     </button>
     <button class="social-button" onclick="openLink('https://facebook.com/your_page')">
@@ -102,27 +137,6 @@
   </div>
 
   <script>
-    if (window.Telegram && Telegram.WebApp) {
-  Telegram.WebApp.ready();
-  Telegram.WebApp.expand();
-
-  // Show the Back Button
-  Telegram.WebApp.BackButton.show();
-
-  // Optional: Close the Web App when Back Button is clicked
-  Telegram.WebApp.BackButton.onClick(() => {
-    Telegram.WebApp.close();
-  });
-
-  // Update theme colors on theme change
-  Telegram.WebApp.onEvent("themeChanged", () => {
-    const theme = Telegram.WebApp.themeParams;
-    document.documentElement.style.setProperty('--text-color', theme.text_color || '#000');
-    document.documentElement.style.setProperty('--button-text-color', theme.button_text_color || '#fff');
-  });
-}
-
-    
     function openLink(url) {
       window.open(url, "_blank");
     }
@@ -130,6 +144,9 @@
     if (window.Telegram && Telegram.WebApp) {
       Telegram.WebApp.ready();
       Telegram.WebApp.expand();
+
+      Telegram.WebApp.BackButton.show();
+      Telegram.WebApp.BackButton.onClick(() => Telegram.WebApp.close());
 
       Telegram.WebApp.onEvent("themeChanged", () => {
         const theme = Telegram.WebApp.themeParams;
