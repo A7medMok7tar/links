@@ -13,7 +13,6 @@
       --text-color: var(--tg-theme-text-color, #000000);
       --button-text-color: var(--tg-theme-button-text-color, #ffffff);
 
-      /* Animated Gradient Colors */
       --gradient1: #00c6ff;
       --gradient2: #0072ff;
       --gradient3: #4facfe;
@@ -37,15 +36,9 @@
     }
 
     @keyframes gradientShift {
-      0% {
-        background-position: 0% 50%;
-      }
-      50% {
-        background-position: 100% 50%;
-      }
-      100% {
-        background-position: 0% 50%;
-      }
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
     h1 {
@@ -73,7 +66,7 @@
       font-weight: bold;
       cursor: pointer;
       color: var(--button-text-color);
-      background: rgba(0, 0, 0, 0.4); /* semi-transparent */
+      background: rgba(0, 0, 0, 0.4);
       backdrop-filter: blur(8px);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
       transition: transform 0.2s;
@@ -96,6 +89,9 @@
     </button>
     <button class="social-button" onclick="openLink('https://t.me/enjoymed')">
       <i class="fas fa-bullhorn"></i> Telegram Channel
+    </button>
+    <button class="social-button" onclick="openLink('https://t.me/enjoymedquiz')">
+      <i class="fas fa-question-circle"></i> Quiz Channel
     </button>
     <button class="social-button" onclick="openLink('https://facebook.com/your_page')">
       <i class="fab fa-facebook-f"></i> Facebook Page
