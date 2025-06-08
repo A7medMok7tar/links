@@ -102,6 +102,27 @@
   </div>
 
   <script>
+    if (window.Telegram && Telegram.WebApp) {
+  Telegram.WebApp.ready();
+  Telegram.WebApp.expand();
+
+  // Show the Back Button
+  Telegram.WebApp.BackButton.show();
+
+  // Optional: Close the Web App when Back Button is clicked
+  Telegram.WebApp.BackButton.onClick(() => {
+    Telegram.WebApp.close();
+  });
+
+  // Update theme colors on theme change
+  Telegram.WebApp.onEvent("themeChanged", () => {
+    const theme = Telegram.WebApp.themeParams;
+    document.documentElement.style.setProperty('--text-color', theme.text_color || '#000');
+    document.documentElement.style.setProperty('--button-text-color', theme.button_text_color || '#fff');
+  });
+}
+
+    
     function openLink(url) {
       window.open(url, "_blank");
     }
