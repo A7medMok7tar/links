@@ -20,7 +20,6 @@
   </script>
   <title>Social Media Links</title>
 
-  <!-- Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 
   <style>
@@ -41,7 +40,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       min-height: 100vh;
 
       background: linear-gradient(-45deg, var(--gradient1), var(--gradient2), var(--gradient3), var(--gradient4));
@@ -78,18 +77,9 @@
     }
 
     @keyframes glowPulse {
-      0% {
-        box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-        transform: scale(1);
-      }
-      50% {
-        box-shadow: 0 0 25px rgba(255, 255, 255, 0.6);
-        transform: scale(1.05);
-      }
-      100% {
-        box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-        transform: scale(1);
-      }
+      0% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.3); transform: scale(1); }
+      50% { box-shadow: 0 0 25px rgba(255, 255, 255, 0.6); transform: scale(1.05); }
+      100% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.3); transform: scale(1); }
     }
 
     h1 {
@@ -130,8 +120,53 @@
       box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
     }
 
-    i {
-      font-size: 1.3rem;
+    .faq-section {
+      margin-top: 3rem;
+      width: 100%;
+      max-width: 600px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 1rem;
+      border-radius: 16px;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    .faq-title {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .faq-item {
+      margin-bottom: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .faq-question {
+      font-weight: bold;
+      cursor: pointer;
+      padding: 0.75rem 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .faq-answer {
+      display: none;
+      padding-bottom: 0.75rem;
+      color: #ddd;
+    }
+
+    .faq-item.open .faq-answer {
+      display: block;
+    }
+
+    .faq-item.open .faq-question i {
+      transform: rotate(180deg);
+    }
+
+    .faq-question i {
+      transition: transform 0.3s ease;
     }
   </style>
 </head>
@@ -139,7 +174,6 @@
 
   <div class="logo-wrapper">
     <img src="logo.png" alt="Logo" />
-    <!-- Replace 'logo.png' with your actual logo path -->
   </div>
 
   <h1>Follow Us</h1>
@@ -162,9 +196,43 @@
     </button>
   </div>
 
+  <!-- FAQ Section -->
+  <div class="faq-section">
+    <div class="faq-title">FAQ</div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        What is this web app for?
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="faq-answer">This is a social media hub embedded inside our Telegram bot to help you connect with our platforms easily.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        How can I contact you?
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="faq-answer">You can reach us through our Telegram account or WhatsApp link above.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        Can I suggest a feature?
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="faq-answer">Absolutely! Drop us a message on Telegram and let us know what you'd like to see next.</div>
+    </div>
+  </div>
+
   <script>
     function openLink(url) {
       window.open(url, "_blank");
+    }
+
+    function toggleFAQ(element) {
+      const item = element.closest('.faq-item');
+      item.classList.toggle('open');
     }
 
     if (window.Telegram && Telegram.WebApp) {
