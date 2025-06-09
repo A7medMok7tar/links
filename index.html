@@ -2,7 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="format-detection" content="telephone=no" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="MobileOptimized" content="176" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="robots" content="noindex,nofollow" />
+  <script src="https://telegram.org/js/telegram-web-app.js?2"></script>
+  <script>
+      function setThemeClass() {
+          document.documentElement.className = Telegram.WebApp.colorScheme;
+      }
+
+      Telegram.WebApp.onEvent('themeChanged', setThemeClass);
+      setThemeClass();
+
+  </script>
   <title>Social Media Links</title>
 
   <!-- Font Awesome for icons -->
@@ -59,7 +74,22 @@
       border-radius: 50%;
       object-fit: cover;
       border: 4px solid #ffffff;
-      box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+      animation: glowPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes glowPulse {
+      0% {
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        transform: scale(1);
+      }
+      50% {
+        box-shadow: 0 0 25px rgba(255, 255, 255, 0.6);
+        transform: scale(1.05);
+      }
+      100% {
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        transform: scale(1);
+      }
     }
 
     h1 {
