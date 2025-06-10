@@ -43,7 +43,6 @@
       align-items: center;
       justify-content: flex-start;
       min-height: 100vh;
-
       background: linear-gradient(-45deg, var(--gradient1), var(--gradient2), var(--gradient3), var(--gradient4));
       background-size: 500% 500%;
       animation: backgroundShift 8s ease infinite;
@@ -122,10 +121,6 @@
     }
 
     .faq-section {
-      font-family: 'Tajawal', sans-serif;
-      direction: rtl;
-      text-align: right;
-      font-size: 1rem;
       margin-top: 3rem;
       width: 100%;
       max-width: 600px;
@@ -134,6 +129,9 @@
       border-radius: 16px;
       box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
       backdrop-filter: blur(10px);
+      font-family: 'Tajawal', sans-serif;
+      direction: rtl;
+      text-align: right;
     }
 
     .faq-title {
@@ -184,13 +182,13 @@
   <h1>Follow Us</h1>
 
   <div class="social-buttons">
-    <button class="social-button" onclick="openLink('https://t.me/your_account')">
+    <button class="social-button" onclick="openLink('https://t.me/enjoymedteam')">
       <i class="fab fa-telegram"></i> Telegram Account
     </button>
-    <button class="social-button" onclick="openLink('https://t.me/your_channel')">
+    <button class="social-button" onclick="openLink('https://t.me/enjoymed')">
       <i class="fas fa-bullhorn"></i> Telegram Channel
     </button>
-    <button class="social-button" onclick="openLink('https://t.me/your_quiz_channel')">
+    <button class="social-button" onclick="openLink('https://t.me/enjoymedquiz')">
       <i class="fas fa-question-circle"></i> Quiz Channel
     </button>
     <button class="social-button" onclick="openLink('https://facebook.com/your_page')">
@@ -207,32 +205,42 @@
 
     <div class="faq-item">
       <div class="faq-question" onclick="toggleFAQ(this)">
-        ما هو هدف هذا التطبيق؟
+        هل يمكن شراء الكتب PDF ؟
         <i class="fas fa-chevron-down"></i>
       </div>
-      <div class="faq-answer">
-        هذا التطبيق هو مركز روابط تواصل اجتماعي مدمج داخل بوت تيليجرام لتسهيل الوصول إلى منصاتنا.
-      </div>
+      <div class="faq-answer">نعم، يمكنك شراء الكتب من خلال البوت أو عن طريق التواصل معنا من خلال حساب التليجرام.</div>
     </div>
 
     <div class="faq-item">
       <div class="faq-question" onclick="toggleFAQ(this)">
-        كيف يمكنني التواصل معكم؟
+        ماذا أفعل إذا لم أجد الكتاب متاحاً في البوت ؟
         <i class="fas fa-chevron-down"></i>
       </div>
-      <div class="faq-answer">
-        يمكنك التواصل معنا من خلال حسابنا على تيليجرام أو رابط الواتساب الموجود أعلاه.
-      </div>
+      <div class="faq-answer">يمكنك التواصل معنا عن طريق حساب التليجرام.</div>
     </div>
 
     <div class="faq-item">
       <div class="faq-question" onclick="toggleFAQ(this)">
-        هل يمكنني اقتراح ميزة جديدة؟
+        هل يمكن شراء الكتب مطبوعة ؟
         <i class="fas fa-chevron-down"></i>
       </div>
-      <div class="faq-answer">
-        بالتأكيد! أرسل لنا اقتراحك عبر تيليجرام وسنكون سعداء بسماعه.
+      <div class="faq-answer">نعم، يمكن شراء الكتب مطبوعة عن طريق حجز الكتاب من خلال الراوبط الموجودة في القناة ثم التوجه إلى المكتبة وطلب الكتاب بمجرد إخبارهم باسمك أو رقم الهاتف.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        كيف يمكنني التواصل معكم ؟
+        <i class="fas fa-chevron-down"></i>
       </div>
+      <div class="faq-answer">يمكنك التواصل معنا من خلال حساب التليجرام أو رابط الواتساب أعلاه.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        هل يمكنني اقتراح ميزة جديدة ؟
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="faq-answer">بكل تأكيد! أرسل لنا رسالة عبر التليجرام وأخبرنا بما ترغب في إضافته.</div>
     </div>
   </div>
 
