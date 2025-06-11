@@ -206,27 +206,83 @@
       transition: background 0.3s;
       animation: pulseIcon 2.5s infinite;
     }
+
+    .book-section {
+      margin: 2rem 0;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .book {
+      background: rgba(255,255,255,0.1);
+      padding: 1rem;
+      border-radius: 12px;
+      text-align: center;
+      width: 150px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    }
+    .book button {
+      margin-top: 0.5rem;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 8px;
+      background: #fff;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .pdf-viewer {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 1000;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .pdf-viewer iframe {
+      width: 90vw;
+      height: 90vh;
+      border: none;
+    }
+    .close-pdf {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      font-size: 1.5rem;
+      color: white;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
 
   <!-- Book Viewing Section -->
-  <div class="book-section" style="margin-bottom: 2rem; width: 100%; max-width: 600px;">
-    <h2 style="text-align: center; margin-bottom: 1rem;">📚 View Books</h2>
-    <div style="display: flex; flex-direction: column; gap: 1rem;">
-      <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
-        <span>Sample Book 1</span>
-        <button onclick="openPDF('book1.pdf')" style="padding: 0.5rem 1rem; border: none; border-radius: 8px; background: #4CAF50; color: white; cursor: pointer;">View</button>
-      </div>
-      <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
-        <span>Sample Book 2</span>
-        <button onclick="openPDF('books/book1.pdf')" style="padding: 0.5rem 1rem; border: none; border-radius: 8px; background: #4CAF50; color: white; cursor: pointer;">View</button>
-      </div>
-      <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
-        <span>Sample Book 3</span>
-        <button onclick="openPDF('books/book1.pdf')" style="padding: 0.5rem 1rem; border: none; border-radius: 8px; background: #4CAF50; color: white; cursor: pointer;">View</button>
-      </div>
+  <div class="book-section">
+    <div class="book">
+      <div>Book One</div>
+      <button onclick="showPDF('books/MCQS FINAL.pdf')">View</button>
     </div>
+    <div class="book">
+      <div>Book Two</div>
+      <button onclick="showPDF('books/book2.pdf')">View</button>
+    </div>
+    <div class="book">
+      <div>Book Three</div>
+      <button onclick="showPDF('books/book3.pdf')">View</button>
+    </div>
+  </div>
+
+  <div class="pdf-viewer" id="pdfViewer">
+    <button class="close-pdf" onclick="closePDF()">&times;</button>
+    <iframe id="pdfFrame"></iframe>
   </div>
 
   <div class="logo-wrapper">
@@ -315,6 +371,19 @@
     function toggleFAQ(element) {
       const item = element.closest('.faq-item');
       item.classList.toggle('open');
+    }
+
+    function showPDF(path) {
+      const viewer = document.getElementById('pdfViewer');
+      const frame = document.getElementById('pdfFrame');
+      frame.src = path;
+      viewer.style.display = 'flex';
+    }
+    function closePDF() {
+      const viewer = document.getElementById('pdfViewer');
+      const frame = document.getElementById('pdfFrame');
+      frame.src = '';
+      viewer.style.display = 'none';
     }
 
     if (window.Telegram && Telegram.WebApp) {
