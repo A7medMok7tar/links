@@ -275,31 +275,10 @@
   <!-- Book Store Section -->
   <div class="book-section">
     <div class="book-card">
-      <img src="https://via.placeholder.com/90x120" alt="Book 1">
-      <div class="book-info">
-        <h3>كتاب النجاح</h3>
-        <p>وصف قصير للكتاب ومحتوياته</p>
-        <p>السعر: 50 جنيه</p>
-        <button class="buy-button" onclick="buyBook('كتاب النجاح')">شراء</button>
-      </div>
-    </div>
-    <div class="book-card">
-      <img src="https://via.placeholder.com/90x120" alt="Book 2">
-      <div class="book-info">
-        <h3>كتاب التفوق</h3>
-        <p>شرح لأهم المواضيع الدراسية</p>
-        <p>السعر: 70 جنيه</p>
-        <button class="buy-button" onclick="buyBook('كتاب التفوق')">شراء</button>
-      </div>
-    </div>
-    <div class="book-card">
-      <img src="https://via.placeholder.com/90x120" alt="Book 3">
-      <div class="book-info">
-        <h3>دليل الطالب</h3>
-        <p>معلومات ونصائح للدراسة الفعالة</p>
-        <p>السعر: 40 جنيه</p>
-        <button class="buy-button" onclick="buyBook('دليل الطالب')">شراء</button>
-      </div>
+      <h3>Book Title Placeholder</h3>
+      <p>Description placeholder.</p>
+      <p><strong>Price:</strong> $10</p>
+      <button class="buy-button" onclick="buyBook('book_1')">Buy</button>
     </div>
   </div>
 
@@ -363,9 +342,11 @@
       item.classList.toggle('open');
     }
 
-    function buyBook(bookName) {
+    function buyBook(bookId) {
       if (Telegram.WebApp) {
-        Telegram.WebApp.sendData(JSON.stringify({ action: "buy", book: bookName }));
+        Telegram.WebApp.sendData(bookId);
+      } else {
+        alert("Telegram WebApp not available");
       }
     }
 
