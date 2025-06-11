@@ -120,6 +120,59 @@
       box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
     }
 
+    .book-section {
+      width: 100%;
+      max-width: 600px;
+      margin-bottom: 3rem;
+    }
+
+    .book-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+      display: flex;
+      gap: 1rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .book-card img {
+      width: 90px;
+      height: 120px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    .book-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .book-info h3 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+
+    .book-info p {
+      margin: 0.25rem 0;
+      font-size: 0.9rem;
+      color: #ddd;
+    }
+
+    .buy-button {
+      margin-top: auto;
+      align-self: flex-start;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 8px;
+      background: #1dd1a1;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
     .faq-section {
       margin-top: 3rem;
       width: 100%;
@@ -172,21 +225,6 @@
       transition: transform 0.3s ease;
     }
 
-    @keyframes pulseIcon {
-      0% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(0, 136, 204, 0.7);
-      }
-      70% {
-        transform: scale(1.1);
-        box-shadow: 0 0 0 12px rgba(0, 136, 204, 0);
-      }
-      100% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(0, 136, 204, 0);
-      }
-    }
-
     .chat-icon {
       position: fixed;
       bottom: 20px;
@@ -206,84 +244,9 @@
       transition: background 0.3s;
       animation: pulseIcon 2.5s infinite;
     }
-
-    .book-section {
-      margin: 2rem 0;
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    .book {
-      background: rgba(255,255,255,0.1);
-      padding: 1rem;
-      border-radius: 12px;
-      text-align: center;
-      width: 150px;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-    }
-    .book button {
-      margin-top: 0.5rem;
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 8px;
-      background: #fff;
-      color: #000;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .pdf-viewer {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.95);
-      z-index: 1000;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    .pdf-viewer iframe {
-      width: 90vw;
-      height: 90vh;
-      border: none;
-    }
-    .close-pdf {
-      position: absolute;
-      top: 10px;
-      right: 20px;
-      font-size: 1.5rem;
-      color: white;
-      background: none;
-      border: none;
-      cursor: pointer;
-    }
   </style>
 </head>
 <body>
-
-  <!-- Book Viewing Section -->
-  <div class="book-section">
-    <div class="book">
-      <div>Book One</div>
-      <button onclick="showPDF('book1.pdf')">View</button>
-    </div>
-    <div class="book">
-      <div>Book Two</div>
-      <button onclick="showPDF('book1.pdf')">View</button>
-    </div>
-    <div class="book">
-      <div>Book Three</div>
-      <button onclick="showPDF('book1.pdf')">View</button>
-    </div>
-  </div>
-
-  <div class="pdf-viewer" id="pdfViewer">
-    <button class="close-pdf" onclick="closePDF()">&times;</button>
-    <iframe id="pdfFrame"></iframe>
-  </div>
 
   <div class="logo-wrapper">
     <img src="logo.png" alt="Logo" />
@@ -307,6 +270,37 @@
     <button class="social-button" onclick="openLink('https://wa.me/your_number')">
       <i class="fab fa-whatsapp"></i> WhatsApp
     </button>
+  </div>
+
+  <!-- Book Store Section -->
+  <div class="book-section">
+    <div class="book-card">
+      <img src="https://via.placeholder.com/90x120" alt="Book 1">
+      <div class="book-info">
+        <h3>كتاب النجاح</h3>
+        <p>وصف قصير للكتاب ومحتوياته</p>
+        <p>السعر: 50 جنيه</p>
+        <button class="buy-button" onclick="buyBook('كتاب النجاح')">شراء</button>
+      </div>
+    </div>
+    <div class="book-card">
+      <img src="https://via.placeholder.com/90x120" alt="Book 2">
+      <div class="book-info">
+        <h3>كتاب التفوق</h3>
+        <p>شرح لأهم المواضيع الدراسية</p>
+        <p>السعر: 70 جنيه</p>
+        <button class="buy-button" onclick="buyBook('كتاب التفوق')">شراء</button>
+      </div>
+    </div>
+    <div class="book-card">
+      <img src="https://via.placeholder.com/90x120" alt="Book 3">
+      <div class="book-info">
+        <h3>دليل الطالب</h3>
+        <p>معلومات ونصائح للدراسة الفعالة</p>
+        <p>السعر: 40 جنيه</p>
+        <button class="buy-button" onclick="buyBook('دليل الطالب')">شراء</button>
+      </div>
+    </div>
   </div>
 
   <!-- FAQ Section -->
@@ -360,10 +354,6 @@
   </div>
 
   <script>
-    function openPDF(path) {
-      window.open(path, "_blank");
-    }
-
     function openLink(url) {
       window.open(url, "_blank");
     }
@@ -373,17 +363,10 @@
       item.classList.toggle('open');
     }
 
-    function showPDF(path) {
-      const viewer = document.getElementById('pdfViewer');
-      const frame = document.getElementById('pdfFrame');
-      frame.src = path;
-      viewer.style.display = 'flex';
-    }
-    function closePDF() {
-      const viewer = document.getElementById('pdfViewer');
-      const frame = document.getElementById('pdfFrame');
-      frame.src = '';
-      viewer.style.display = 'none';
+    function buyBook(bookName) {
+      if (Telegram.WebApp) {
+        Telegram.WebApp.sendData(JSON.stringify({ action: "buy", book: bookName }));
+      }
     }
 
     if (window.Telegram && Telegram.WebApp) {
