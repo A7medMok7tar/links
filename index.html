@@ -171,6 +171,41 @@
     .faq-question i {
       transition: transform 0.3s ease;
     }
+
+    @keyframes pulseIcon {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(0, 136, 204, 0.7);
+      }
+      70% {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 12px rgba(0, 136, 204, 0);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(0, 136, 204, 0);
+      }
+    }
+
+    .chat-icon {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      width: 56px;
+      height: 56px;
+      background: #0088cc;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      z-index: 999;
+      font-size: 24px;
+      transition: background 0.3s;
+      animation: pulseIcon 2.5s infinite;
+    }
   </style>
 </head>
 <body>
@@ -242,6 +277,11 @@
       </div>
       <div class="faq-answer">بكل تأكيد! أرسل لنا رسالة عبر التليجرام وأخبرنا بما ترغب في إضافته.</div>
     </div>
+  </div>
+
+  <!-- Chat Icon -->
+  <div class="chat-icon" onclick="openLink('https://t.me/enjoymedteam')">
+    <i class="fab fa-telegram-plane"></i>
   </div>
 
   <script>
