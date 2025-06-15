@@ -2,311 +2,258 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <meta name="format-detection" content="telephone=no" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="MobileOptimized" content="176" />
-  <meta name="HandheldFriendly" content="True" />
-  <meta name="robots" content="noindex,nofollow" />
-  <script src="https://telegram.org/js/telegram-web-app.js?2"></script>
-  <script>
-      function setThemeClass() {
-          document.documentElement.className = Telegram.WebApp.colorScheme;
-      }
-
-      Telegram.WebApp.onEvent('themeChanged', setThemeClass);
-      setThemeClass();
-
-  </script>
-  <title>Social Media Links</title>
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Telegram WebApp</title>
   <style>
-    :root {
-      --text-color: var(--tg-theme-text-color, #ffffff);
-      --button-text-color: var(--tg-theme-button-text-color, #ffffff);
-      --gradient1: #ff6ec4;
-      --gradient2: #7873f5;
-      --gradient3: #1dd1a1;
-      --gradient4: #ff9ff3;
-    }
-
     body {
-      font-family: Arial, sans-serif;
-      color: var(--text-color);
       margin: 0;
-      padding: 2rem;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: white;
+      background: linear-gradient(to bottom right, #0f2027, #203a43, #2c5364);
+      background-attachment: fixed;
+    }
+
+    header {
+      text-align: center;
+      padding: 2rem 1rem 1rem;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      margin-bottom: 0.2rem;
+    }
+
+    header p {
+      margin: 0;
+      font-size: 1rem;
+      opacity: 0.8;
+    }
+
+    section {
+      max-width: 800px;
+      margin: 1rem auto;
+      padding: 1rem;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 1rem;
+      margin: 1rem 0;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .card h3 {
+      margin-top: 0;
+      font-size: 1.2rem;
+    }
+
+    .links {
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      min-height: 100vh;
-      background: linear-gradient(-45deg, var(--gradient1), var(--gradient2), var(--gradient3), var(--gradient4));
-      background-size: 500% 500%;
-      animation: backgroundShift 8s ease infinite;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
     }
 
-    @keyframes backgroundShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    .logo-wrapper {
-      width: 180px;
-      height: 180px;
-      border-radius: 50%;
+    .links a {
+      flex: 1 1 40%;
+      text-align: center;
       background: #ffffff22;
-      padding: 6px;
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 1.5rem;
+      padding: 0.5rem;
+      border-radius: 10px;
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      transition: background 0.3s;
     }
 
-    .logo-wrapper img {
+    .links a:hover {
+      background: #ffffff44;
+    }
+
+    .book-carousel {
+      position: relative;
+      width: 100%;
+      margin: 2rem auto;
+      overflow: hidden;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+      padding: 1rem 2.5rem;
+    }
+
+    .carousel-track {
+      display: flex;
+      gap: 1rem;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+    }
+
+    .carousel-track::-webkit-scrollbar {
+      display: none;
+    }
+
+    .book-card {
+      flex: 0 0 auto;
+      width: 120px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .book-card img {
+      width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .book-card h4 {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.6);
+      border: none;
+      color: white;
+      font-size: 2rem;
+      padding: 0.25rem 0.6rem;
+      cursor: pointer;
+      z-index: 2;
+      border-radius: 8px;
+    }
+
+    .arrow.left {
+      left: 0.3rem;
+    }
+
+    .arrow.right {
+      right: 0.3rem;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.8rem;
+      opacity: 0.6;
+      padding: 2rem 1rem;
+    }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 4px solid #ffffff;
-      animation: glowPulse 3s ease-in-out infinite;
-    }
-
-    @keyframes glowPulse {
-      0% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.3); transform: scale(1); }
-      50% { box-shadow: 0 0 25px rgba(255, 255, 255, 0.6); transform: scale(1.05); }
-      100% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.3); transform: scale(1); }
-    }
-
-    h1 {
-      margin-bottom: 2rem;
-      text-align: center;
-      font-size: 2rem;
-      letter-spacing: 1px;
-    }
-
-    .social-buttons {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      width: 100%;
-      max-width: 400px;
-    }
-
-    .social-button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.75rem;
-      padding: 1rem;
-      border: none;
-      border-radius: 12px;
-      font-size: 1.1rem;
-      font-weight: bold;
-      cursor: pointer;
-      color: var(--button-text-color);
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
-    }
-
-    .social-button:hover {
-      transform: scale(1.07);
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
-    }
-
-    .faq-section {
-      margin-top: 3rem;
-      width: 100%;
-      max-width: 600px;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 1rem;
-      border-radius: 16px;
-      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(10px);
-      font-family: 'Tajawal', sans-serif;
-      direction: rtl;
-      text-align: right;
-    }
-
-    .faq-title {
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-      text-align: center;
-    }
-
-    .faq-item {
-      margin-bottom: 1rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .faq-question {
-      font-weight: bold;
-      cursor: pointer;
-      padding: 0.75rem 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .faq-answer {
+      background: rgba(0, 0, 0, 0.7);
       display: none;
-      padding-bottom: 0.75rem;
-      color: #ddd;
-    }
-
-    .faq-item.open .faq-answer {
-      display: block;
-    }
-
-    .faq-item.open .faq-question i {
-      transform: rotate(180deg);
-    }
-
-    .faq-question i {
-      transition: transform 0.3s ease;
-    }
-
-    @keyframes pulseIcon {
-      0% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(0, 136, 204, 0.7);
-      }
-      70% {
-        transform: scale(1.1);
-        box-shadow: 0 0 0 12px rgba(0, 136, 204, 0);
-      }
-      100% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(0, 136, 204, 0);
-      }
-    }
-
-    .chat-icon {
-      position: fixed;
-      bottom: 20px;
-      left: 20px;
-      width: 56px;
-      height: 56px;
-      background: #0088cc;
-      color: white;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
       align-items: center;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      justify-content: center;
+      z-index: 10;
+    }
+
+    .modal-content {
+      background: #1e2a38;
+      padding: 1.5rem;
+      border-radius: 12px;
+      max-width: 90%;
+      max-height: 80%;
+      color: white;
+      box-shadow: 0 0 20px black;
+    }
+
+    .modal-content h2 {
+      margin-top: 0;
+    }
+
+    .modal-content button {
+      margin-top: 1rem;
+      background: crimson;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      color: white;
       cursor: pointer;
-      z-index: 999;
-      font-size: 24px;
-      transition: background 0.3s;
-      animation: pulseIcon 2.5s infinite;
     }
   </style>
 </head>
 <body>
 
-  <div class="logo-wrapper">
-    <img src="logo.png" alt="Logo" />
-  </div>
+  <header>
+    <h1>Welcome to Our WebApp</h1>
+    <p>Explore our features below</p>
+  </header>
 
-  <h1>Follow Us</h1>
-
-  <div class="social-buttons">
-    <button class="social-button" onclick="openLink('https://t.me/enjoymedteam')">
-      <i class="fab fa-telegram"></i> Telegram Account
-    </button>
-    <button class="social-button" onclick="openLink('https://t.me/enjoymed')">
-      <i class="fas fa-bullhorn"></i> Telegram Channel
-    </button>
-    <button class="social-button" onclick="openLink('https://t.me/enjoymedquiz')">
-      <i class="fas fa-question-circle"></i> Quiz Channel
-    </button>
-    <button class="social-button" onclick="openLink('https://facebook.com/your_page')">
-      <i class="fab fa-facebook-f"></i> Facebook Page
-    </button>
-    <button class="social-button" onclick="openLink('https://wa.me/your_number')">
-      <i class="fab fa-whatsapp"></i> WhatsApp
-    </button>
-  </div>
-
-  <!-- FAQ Section -->
-  <div class="faq-section">
-    <div class="faq-title">الأسئلة الشائعة</div>
-
-    <div class="faq-item">
-      <div class="faq-question" onclick="toggleFAQ(this)">
-        هل يمكن شراء الكتب PDF ؟
-        <i class="fas fa-chevron-down"></i>
-      </div>
-      <div class="faq-answer">نعم، يمكنك شراء الكتب من خلال البوت أو عن طريق التواصل معنا من خلال حساب التليجرام.</div>
+  <section class="card">
+    <h3>Social Links</h3>
+    <div class="links">
+      <a href="https://t.me/example">Telegram</a>
+      <a href="https://facebook.com/example">Facebook</a>
+      <a href="https://twitter.com/example">Twitter</a>
+      <a href="https://instagram.com/example">Instagram</a>
     </div>
+  </section>
 
-    <div class="faq-item">
-      <div class="faq-question" onclick="toggleFAQ(this)">
-        ماذا أفعل إذا لم أجد الكتاب متاحاً في البوت ؟
-        <i class="fas fa-chevron-down"></i>
+  <section class="card">
+    <h3>Featured Books</h3>
+    <div class="book-carousel">
+      <button class="arrow left" onclick="scrollCarousel(-1)">‹</button>
+      <div class="carousel-track" id="carouselTrack">
+        <div class="book-card" onclick="openModal('Book Title 1', 'This is a short description for Book 1.')">
+          <img src="https://via.placeholder.com/90x120?text=Book+1" />
+          <h4>Book Title 1</h4>
+        </div>
+        <div class="book-card" onclick="openModal('Book Title 2', 'This is a short description for Book 2.')">
+          <img src="https://via.placeholder.com/90x120?text=Book+2" />
+          <h4>Book Title 2</h4>
+        </div>
+        <div class="book-card" onclick="openModal('Book Title 3', 'This is a short description for Book 3.')">
+          <img src="https://via.placeholder.com/90x120?text=Book+3" />
+          <h4>Book Title 3</h4>
+        </div>
       </div>
-      <div class="faq-answer">يمكنك التواصل معنا عن طريق حساب التليجرام.</div>
+      <button class="arrow right" onclick="scrollCarousel(1)">›</button>
     </div>
+  </section>
 
-    <div class="faq-item">
-      <div class="faq-question" onclick="toggleFAQ(this)">
-        هل يمكن شراء الكتب مطبوعة ؟
-        <i class="fas fa-chevron-down"></i>
-      </div>
-      <div class="faq-answer">نعم، يمكن شراء الكتب مطبوعة عن طريق حجز الكتاب من خلال الراوبط الموجودة في القناة ثم التوجه إلى المكتبة وطلب الكتاب بمجرد إخبارهم باسمك أو رقم الهاتف.</div>
+  <section class="card">
+    <h3>FAQ</h3>
+    <p>Have questions? Visit our <a href="#" style="color: lightblue">FAQ page</a> to learn more.</p>
+  </section>
+
+  <footer>© 2025 Your Company. All rights reserved.</footer>
+
+  <!-- Modal -->
+  <div class="modal" id="bookModal">
+    <div class="modal-content">
+      <h2 id="modalTitle">Book Title</h2>
+      <p id="modalDescription">Description goes here...</p>
+      <button onclick="closeModal()">Close</button>
     </div>
-
-    <div class="faq-item">
-      <div class="faq-question" onclick="toggleFAQ(this)">
-        كيف يمكنني التواصل معكم ؟
-        <i class="fas fa-chevron-down"></i>
-      </div>
-      <div class="faq-answer">يمكنك التواصل معنا من خلال حساب التليجرام أو رابط الواتساب أعلاه.</div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-question" onclick="toggleFAQ(this)">
-        هل يمكنني اقتراح ميزة جديدة ؟
-        <i class="fas fa-chevron-down"></i>
-      </div>
-      <div class="faq-answer">بكل تأكيد! أرسل لنا رسالة عبر التليجرام وأخبرنا بما ترغب في إضافته.</div>
-    </div>
-  </div>
-
-  <!-- Chat Icon -->
-  <div class="chat-icon" onclick="openLink('https://t.me/enjoymedteam')">
-    <i class="fab fa-telegram-plane"></i>
   </div>
 
   <script>
-    function openLink(url) {
-      window.open(url, "_blank");
+    function scrollCarousel(direction) {
+      const track = document.getElementById("carouselTrack");
+      const scrollAmount = 140;
+      track.scrollBy({ left: direction * scrollAmount, behavior: "smooth" });
     }
 
-    function toggleFAQ(element) {
-      const item = element.closest('.faq-item');
-      item.classList.toggle('open');
+    function openModal(title, description) {
+      document.getElementById("modalTitle").textContent = title;
+      document.getElementById("modalDescription").textContent = description;
+      document.getElementById("bookModal").style.display = "flex";
     }
 
-    if (window.Telegram && Telegram.WebApp) {
-      Telegram.WebApp.ready();
-      Telegram.WebApp.expand();
-
-      Telegram.WebApp.BackButton.show();
-      Telegram.WebApp.BackButton.onClick(() => Telegram.WebApp.close());
-
-      Telegram.WebApp.onEvent("themeChanged", () => {
-        const theme = Telegram.WebApp.themeParams;
-        document.documentElement.style.setProperty('--text-color', theme.text_color || '#fff');
-        document.documentElement.style.setProperty('--button-text-color', theme.button_text_color || '#fff');
-      });
+    function closeModal() {
+      document.getElementById("bookModal").style.display = "none";
     }
   </script>
+
 </body>
 </html>
