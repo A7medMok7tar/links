@@ -7,7 +7,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --tg-bg: #ffffff;
+            --tg-bg: #fff;
             --tg-text: #222;
             --tg-accent: #229ED9;
             --tg-accent2: #e8f5fe;
@@ -59,11 +59,10 @@
             padding: 14px 0; cursor: pointer; font-size: 1.08em; margin: 6px 0;
             width: 100%;
             display: block;
-            transition: background 0.2s, transform 0.1s;
+            transition: none;
         }
-        .btn:hover, button:hover {
+        .btn:active, button:active {
             background: #1c8ec0;
-            transform: translateY(-2px) scale(1.03);
         }
         .choice {
             display: flex;
@@ -73,9 +72,9 @@
             border-radius: 9px;
             padding: 14px 12px;
             cursor: pointer;
-            transition: background 0.2s;
             font-size: 1.08em;
             min-height: 48px;
+            transition: none;
         }
         .choice input[type=radio] { margin-right: 14px; width: 22px; height: 22px; accent-color: var(--tg-accent); }
         .choice.selected { background: #c7f9cc; }
@@ -96,7 +95,7 @@
             font-weight: 600;
             font-size: 1.05em;
         }
-        .nav a:hover { text-decoration: underline; }
+        .nav a:active { color: #1c8ec0; }
         .progress-bar-bg {
             width: 100%; height: 20px; background: #e0e7ef;
             border-radius: 10px; margin-bottom: 18px; overflow: hidden;
@@ -106,7 +105,7 @@
             height: 100%;
             background: linear-gradient(90deg, var(--tg-accent) 0%, #38b2ac 100%);
             border-radius: 10px;
-            transition: width 0.4s cubic-bezier(.4,2,.6,1);
+            transition: none;
         }
         .question-nav {
             display: flex; justify-content: space-between; align-items: center; margin-top: 18px;
@@ -139,8 +138,9 @@
             margin-top: 16px;
             width: 100%;
             font-size: 1.08em;
+            transition: none;
         }
-        .restart-btn:hover {
+        .restart-btn:active {
             background: linear-gradient(90deg, #f472b6 0%, #fbbf24 100%);
         }
         @media (max-width: 600px) {
@@ -225,96 +225,100 @@ function applyTelegramTheme() {
 }
 applyTelegramTheme();
 
-function render() {
+function renderSystems() {
     const app = document.getElementById('app');
-    if (!state.system) {
-        app.innerHTML = `<h3>
-            <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="#229ED9" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="5" stroke="#229ED9" stroke-width="2"/></svg>
-            Select a System</h3>
-            <ul>${Object.keys(QUESTION_BANK).map(sys =>
-                `<li><button class="btn" onclick="selectSystem('${sys}')">${sys}</button></li>`
-            ).join('')}</ul>`;
-    } else if (!state.subject) {
-        app.innerHTML = `<div class="nav"><a href="#" onclick="resetState();return false;">&larr; Back to Systems</a></div>
-            <h3>${state.system}: Select a Subject</h3>
-            <ul>${Object.keys(QUESTION_BANK[state.system]).map(subj =>
-                `<li><button class="btn" onclick="selectSubject('${subj}')">${subj}</button></li>`
-            ).join('')}</ul>`;
-    } else if (!state.chapter) {
-        app.innerHTML = `<div class="nav"><a href="#" onclick="state.subject=null;render();return false;">&larr; Back to Subjects</a></div>
-            <h3>${state.system} > ${state.subject}: Select a Chapter</h3>
-            <ul>${Object.keys(QUESTION_BANK[state.system][state.subject]).map(chap =>
-                `<li><button class="btn" onclick="selectChapter('${chap}')">${chap}</button></li>`
-            ).join('')}</ul>`;
-    } else {
-        const questions = QUESTION_BANK[state.system][state.subject][state.chapter];
-        const q = questions[state.currentQuestion];
-        const total = questions.length;
-        const progress = Math.round(((state.currentQuestion + 1) / total) * 100);
+    app.innerHTML = `<h3>
+        <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="#229ED9" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="5" stroke="#229ED9" stroke-width="2"/></svg>
+        Select a System</h3>
+        <ul>${Object.keys(QUESTION_BANK).map(sys =>
+            `<li><button class="btn" onclick="selectSystem('${sys}')">${sys}</button></li>`
+        ).join('')}</ul>`;
+}
+function renderSubjects() {
+    const app = document.getElementById('app');
+    app.innerHTML = `<div class="nav"><a href="#" onclick="resetState();return false;">&larr; Back to Systems</a></div>
+        <h3>${state.system}: Select a Subject</h3>
+        <ul>${Object.keys(QUESTION_BANK[state.system]).map(subj =>
+            `<li><button class="btn" onclick="selectSubject('${subj}')">${subj}</button></li>`
+        ).join('')}</ul>`;
+}
+function renderChapters() {
+    const app = document.getElementById('app');
+    app.innerHTML = `<div class="nav"><a href="#" onclick="state.subject=null;renderSubjects();return false;">&larr; Back to Subjects</a></div>
+        <h3>${state.system} > ${state.subject}: Select a Chapter</h3>
+        <ul>${Object.keys(QUESTION_BANK[state.system][state.subject]).map(chap =>
+            `<li><button class="btn" onclick="selectChapter('${chap}')">${chap}</button></li>`
+        ).join('')}</ul>`;
+}
+function renderQuestion() {
+    const app = document.getElementById('app');
+    const questions = QUESTION_BANK[state.system][state.subject][state.chapter];
+    const q = questions[state.currentQuestion];
+    const total = questions.length;
+    const progress = Math.round(((state.currentQuestion + 1) / total) * 100);
 
-        let html = `<div class="nav">
-            <a href="#" onclick="state.chapter=null;state.currentQuestion=0;state.answers=[];state.submitted=false;state.showFeedback=[];render();return false;">&larr; Back to Chapters</a>
-        </div>
-        <div class="chapter-title">${state.system} > ${state.subject} > ${state.chapter}</div>
-        <div class="progress-bar-bg"><div class="progress-bar" style="width:${progress}%"></div></div>
-        <div class="question-number">Question ${state.currentQuestion + 1} of ${total}</div>
-        <form id="quizForm">`;
+    let html = `<div class="nav">
+        <a href="#" onclick="state.chapter=null;state.currentQuestion=0;state.answers=[];state.submitted=false;state.showFeedback=[];renderChapters();return false;">&larr; Back to Chapters</a>
+    </div>
+    <div class="chapter-title">${state.system} > ${state.subject} > ${state.chapter}</div>
+    <div class="progress-bar-bg"><div class="progress-bar" style="width:${progress}%"></div></div>
+    <div class="question-number">Question ${state.currentQuestion + 1} of ${total}</div>
+    <form id="quizForm">`;
 
-        html += `<div style="margin-bottom:18px;">
-            <b>${q.question}</b><br>`;
-        q.choices.forEach(choice => {
-            let classes = "choice";
-            let icon = "";
-            if (state.showFeedback[state.currentQuestion]) {
-                if (choice === q.answer) {
-                    classes += " correct";
-                    icon = ' <svg class="icon" viewBox="0 0 24 24" fill="none" width="20" height="20"><circle cx="12" cy="12" r="10" stroke="#22c55e" stroke-width="2"/><path d="M8 12l2.5 2.5L16 9" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-                }
-                if (state.answers[state.currentQuestion] === choice && choice !== q.answer) {
-                    classes += " wrong";
-                    icon = ' <svg class="icon" viewBox="0 0 24 24" fill="none" width="20" height="20"><circle cx="12" cy="12" r="10" stroke="#ef4444" stroke-width="2"/><path d="M9 9l6 6M15 9l-6 6" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/></svg>';
-                }
-            } else if (state.answers[state.currentQuestion] === choice) {
-                classes += " selected";
+    html += `<div style="margin-bottom:18px;">
+        <b>${q.question}</b><br>`;
+    q.choices.forEach(choice => {
+        let classes = "choice";
+        let icon = "";
+        if (state.showFeedback[state.currentQuestion]) {
+            if (choice === q.answer) {
+                classes += " correct";
+                icon = ' <svg class="icon" viewBox="0 0 24 24" fill="none" width="20" height="20"><circle cx="12" cy="12" r="10" stroke="#22c55e" stroke-width="2"/><path d="M8 12l2.5 2.5L16 9" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
             }
-            const checked = state.answers[state.currentQuestion] === choice ? "checked" : "";
-            html += `<label class="${classes}">
-                <input type="radio" name="q${state.currentQuestion}" value="${choice}" ${checked} ${state.showFeedback[state.currentQuestion] ? "disabled" : ""}> ${choice}${icon}
-            </label>`;
-        });
-        html += `</div>`;
-
-        html += `<div class="question-nav">`;
-        html += `<button type="button" class="btn" onclick="prevQuestion()" ${state.currentQuestion === 0 ? "disabled" : ""}>&larr; Previous</button>`;
-        if (state.currentQuestion < total - 1) {
-            html += `<button type="button" class="btn" onclick="nextQuestion()" ${!state.showFeedback[state.currentQuestion] ? "disabled" : ""}>Next &rarr;</button>`;
+            if (state.answers[state.currentQuestion] === choice && choice !== q.answer) {
+                classes += " wrong";
+                icon = ' <svg class="icon" viewBox="0 0 24 24" fill="none" width="20" height="20"><circle cx="12" cy="12" r="10" stroke="#ef4444" stroke-width="2"/><path d="M9 9l6 6M15 9l-6 6" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/></svg>';
+            }
+        } else if (state.answers[state.currentQuestion] === choice) {
+            classes += " selected";
         }
-        html += `</div></form>`;
+        const checked = state.answers[state.currentQuestion] === choice ? "checked" : "";
+        html += `<label class="${classes}">
+            <input type="radio" name="q${state.currentQuestion}" value="${choice}" ${checked} ${state.showFeedback[state.currentQuestion] ? "disabled" : ""}> ${choice}${icon}
+        </label>`;
+    });
+    html += `</div>`;
 
-        // Show score after last question is answered
-        if (state.currentQuestion === total - 1 && state.showFeedback[total - 1]) {
-            const score = questions.reduce((acc, q, i) => acc + (state.answers[i] === q.answer ? 1 : 0), 0);
-            html += `<div class="score">Your Score: <b>${score} / ${questions.length}</b></div>
-            <div style="text-align:center;margin-top:10px;">
-                <button class="restart-btn" onclick="restartQuiz()">Restart Chapter</button>
-            </div>`;
-        }
-
-        app.innerHTML = html;
-
-        document.getElementById('quizForm').onsubmit = function(e) {
-            e.preventDefault();
-        };
-
-        // Save answer on radio click and show feedback
-        document.querySelectorAll('input[type=radio]').forEach(radio => {
-            radio.onchange = function() {
-                state.answers[state.currentQuestion] = this.value;
-                state.showFeedback[state.currentQuestion] = true;
-                render();
-            };
-        });
+    html += `<div class="question-nav">`;
+    html += `<button type="button" class="btn" onclick="prevQuestion()" ${state.currentQuestion === 0 ? "disabled" : ""}>&larr; Previous</button>`;
+    if (state.currentQuestion < total - 1) {
+        html += `<button type="button" class="btn" onclick="nextQuestion()" ${!state.showFeedback[state.currentQuestion] ? "disabled" : ""}>Next &rarr;</button>`;
     }
+    html += `</div></form>`;
+
+    // Show score after last question is answered
+    if (state.currentQuestion === total - 1 && state.showFeedback[total - 1]) {
+        const score = questions.reduce((acc, q, i) => acc + (state.answers[i] === q.answer ? 1 : 0), 0);
+        html += `<div class="score">Your Score: <b>${score} / ${questions.length}</b></div>
+        <div style="text-align:center;margin-top:10px;">
+            <button class="restart-btn" onclick="restartQuiz()">Restart Chapter</button>
+        </div>`;
+    }
+
+    app.innerHTML = html;
+
+    document.getElementById('quizForm').onsubmit = function(e) {
+        e.preventDefault();
+    };
+
+    // Save answer on radio click and show feedback
+    document.querySelectorAll('input[type=radio]').forEach(radio => {
+        radio.onchange = function() {
+            state.answers[state.currentQuestion] = this.value;
+            state.showFeedback[state.currentQuestion] = true;
+            renderQuestion();
+        };
+    });
 }
 
 function selectSystem(sys) {
@@ -325,7 +329,7 @@ function selectSystem(sys) {
     state.currentQuestion = 0;
     state.submitted = false;
     state.showFeedback = [];
-    render();
+    renderSubjects();
 }
 function selectSubject(subj) {
     state.subject = subj;
@@ -334,7 +338,7 @@ function selectSubject(subj) {
     state.currentQuestion = 0;
     state.submitted = false;
     state.showFeedback = [];
-    render();
+    renderChapters();
 }
 function selectChapter(chap) {
     state.chapter = chap;
@@ -342,23 +346,23 @@ function selectChapter(chap) {
     state.currentQuestion = 0;
     state.submitted = false;
     state.showFeedback = [];
-    render();
+    renderQuestion();
 }
 function resetState() {
     state = {system: null, subject: null, chapter: null, answers: [], currentQuestion: 0, submitted: false, showFeedback: []};
-    render();
+    renderSystems();
 }
 function prevQuestion() {
     if (state.currentQuestion > 0) {
         state.currentQuestion--;
-        render();
+        renderQuestion();
     }
 }
 function nextQuestion() {
     const questions = QUESTION_BANK[state.system][state.subject][state.chapter];
     if (state.currentQuestion < questions.length - 1 && state.showFeedback[state.currentQuestion]) {
         state.currentQuestion++;
-        render();
+        renderQuestion();
     }
 }
 function restartQuiz() {
@@ -366,7 +370,7 @@ function restartQuiz() {
     state.currentQuestion = 0;
     state.submitted = false;
     state.showFeedback = [];
-    render();
+    renderQuestion();
 }
 
 // Listen for Telegram theme changes
@@ -374,7 +378,8 @@ if (window.Telegram && Telegram.WebApp) {
     Telegram.WebApp.onEvent('themeChanged', applyTelegramTheme);
 }
 
-render();
+// Initial render
+renderSystems();
 </script>
 </body>
 </html>
