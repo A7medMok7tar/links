@@ -1,186 +1,333 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>EnjoyMed Web App</title>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
+    <title>Medical Question Bank</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script>
-        window.onload = function() {
-            if (window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe) {
-                var user_id = Telegram.WebApp.initDataUnsafe.user && Telegram.WebApp.initDataUnsafe.user.id;
-                if (user_id) {
-                    // Set the user_id in a hidden input or display it
-                    document.getElementById('uid').innerText = user_id;
-                    document.querySelectorAll('input[name="user_id"]').forEach(function(input) {
-                        input.value = user_id;
-                    });
-                }
-            }
-        }
-    </script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         body {
-            background: #f7fafc;
+            background: linear-gradient(135deg, #e0e7ff 0%, #f0fff4 100%);
             font-family: 'Segoe UI', Arial, sans-serif;
-            color: #222;
             margin: 0;
-            padding: 0;
         }
         .container {
             max-width: 700px;
             margin: 40px auto;
             background: #fff;
-            border-radius: 18px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.07);
-            padding: 32px 24px 24px 24px;
+            border-radius: 22px;
+            box-shadow: 0 8px 32px rgba(56,178,172,0.13), 0 1.5px 8px rgba(66,153,225,0.09);
+            padding: 36px 24px 28px 24px;
+            position: relative;
         }
-        h2, h3 {
+        h2 {
             text-align: center;
             margin-top: 0;
+            font-size: 2.1em;
+            color: #2563eb;
+            letter-spacing: 1px;
+            font-weight: 800;
         }
-        .books-list {
-            list-style: none;
-            padding: 0;
+        h3 {
+            text-align: center;
+            margin-top: 0;
+            color: #0f766e;
+            font-weight: 700;
         }
-        .book-card {
-            background: #f0f4fa;
-            border-radius: 12px;
-            margin-bottom: 18px;
-            padding: 18px 18px 12px 18px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .book-title {
-            font-size: 1.15em;
-            font-weight: 600;
-            color: #2a4365;
-        }
-        .book-desc {
-            font-size: 0.98em;
-            color: #444;
-        }
-        .book-price {
-            font-size: 1em;
-            color: #3182ce;
-            font-weight: 500;
-        }
-        .book-actions {
-            margin-top: 8px;
-        }
-        .btn {
-            display: inline-block;
-            padding: 7px 18px;
-            font-size: 1em;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            margin-right: 8px;
-            margin-top: 4px;
-            transition: background 0.2s, color 0.2s;
-        }
-        .btn-add {
+        ul { list-style: none; padding: 0; }
+        li { margin-bottom: 14px; }
+        .btn, button {
             background: linear-gradient(90deg, #38b2ac 0%, #4299e1 100%);
-            color: #fff;
-            font-weight: 600;
+            color: #fff; font-weight: 700; border: none; border-radius: 10px;
+            padding: 10px 22px; cursor: pointer; font-size: 1.08em; margin: 4px 0;
+            box-shadow: 0 2px 8px rgba(66,153,225,0.09);
+            transition: background 0.2s, transform 0.1s;
         }
-        .btn-add:hover {
+        .btn:hover, button:hover {
             background: linear-gradient(90deg, #4299e1 0%, #38b2ac 100%);
+            transform: translateY(-2px) scale(1.03);
         }
-        .btn-remove {
-            background: #e53e3e;
-            color: #fff;
-            font-weight: 600;
-        }
-        .btn-remove:hover {
-            background: #c53030;
-        }
-        .cart-list {
-            list-style: none;
-            padding: 0;
-            margin-bottom: 10px;
-        }
-        .cart-list li {
-            background: #edf2f7;
+        .choice {
+            display: block;
+            margin: 8px 0;
+            background: #f0f4fa;
             border-radius: 7px;
             padding: 7px 12px;
-            margin-bottom: 6px;
-            color: #2d3748;
-        }
-        .pay-section {
-            text-align: center;
-            margin-top: 18px;
-        }
-        .btn-pay {
-            background: linear-gradient(90deg, #f6d365 0%, #fda085 100%);
-            color: #222;
-            font-weight: 700;
-            font-size: 1.1em;
-            border: none;
-            border-radius: 10px;
-            padding: 12px 32px;
             cursor: pointer;
-            box-shadow: 0 2px 8px rgba(253,160,133,0.12);
             transition: background 0.2s;
         }
-        .btn-pay:hover {
-            background: linear-gradient(90deg, #fda085 0%, #f6d365 100%);
+        .choice input[type=radio] { margin-right: 8px; }
+        .choice.selected { background: #c7f9cc; }
+        .correct { color: #22c55e; font-weight: bold; }
+        .wrong { color: #ef4444; font-weight: bold; }
+        .score {
+            text-align: center;
+            font-size: 1.3em;
+            margin-top: 22px;
+            color: #0ea5e9;
+            font-weight: 700;
+        }
+        .nav { margin-bottom: 18px; }
+        .nav a {
+            color: #4299e1;
+            text-decoration: none;
+            margin-right: 10px;
+            font-weight: 600;
+            font-size: 1.05em;
+        }
+        .nav a:hover { text-decoration: underline; }
+        .progress-bar-bg {
+            width: 100%; height: 20px; background: #e0e7ef;
+            border-radius: 10px; margin-bottom: 18px; overflow: hidden;
+            box-shadow: 0 1px 4px rgba(56,178,172,0.07);
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #38b2ac 0%, #4299e1 100%);
+            border-radius: 10px;
+            transition: width 0.4s cubic-bezier(.4,2,.6,1);
+        }
+        .question-nav {
+            display: flex; justify-content: space-between; align-items: center; margin-top: 18px;
+        }
+        .icon {
+            margin-right: 8px;
+            color: #4299e1;
+        }
+        .chapter-title {
+            text-align: center;
+            font-size: 1.1em;
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+        .question-number {
+            font-size: 1.1em;
+            color: #0ea5e9;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .restart-btn {
+            background: linear-gradient(90deg, #fbbf24 0%, #f472b6 100%);
+            color: #fff;
+            font-weight: 700;
+            border-radius: 10px;
+            padding: 10px 22px;
+            margin-top: 16px;
+            box-shadow: 0 2px 8px rgba(253,186,116,0.09);
+        }
+        .restart-btn:hover {
+            background: linear-gradient(90deg, #f472b6 0%, #fbbf24 100%);
         }
         @media (max-width: 600px) {
             .container { padding: 12px 4px; }
-            .book-card { padding: 12px 8px 8px 8px; }
+            h2 { font-size: 1.3em; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>📚 EnjoyMed Book Store</h2>
-        <div style="text-align:center; margin-bottom:18px;">
-            <span style="background:#e2e8f0; padding:6px 14px; border-radius:8px; font-size:1em;">
-                👤 User ID: <b>{{ user_id }}</b>
-            </span>
+<div class="container">
+    <h2><i class="fa-solid fa-notes-medical"></i> Medical Question Bank</h2>
+    <div id="app"></div>
+</div>
+<script>
+const QUESTION_BANK = {
+    "Musculoskeletal System": {
+        "Anatomy": {
+            "Bones": [
+                {
+                    "question": "Which bone is the longest in the human body?",
+                    "choices": ["Femur", "Tibia", "Humerus", "Fibula"],
+                    "answer": "Femur"
+                },
+                {
+                    "question": "How many bones are in the adult human body?",
+                    "choices": ["206", "210", "201", "208"],
+                    "answer": "206"
+                }
+            ],
+            "Joints": [
+                {
+                    "question": "Which joint is a ball and socket joint?",
+                    "choices": ["Knee", "Elbow", "Shoulder", "Ankle"],
+                    "answer": "Shoulder"
+                }
+            ]
+        },
+        "Physiology": {
+            "Muscle Contraction": [
+                {
+                    "question": "Which ion is essential for muscle contraction?",
+                    "choices": ["Sodium", "Potassium", "Calcium", "Magnesium"],
+                    "answer": "Calcium"
+                }
+            ]
+        }
+    },
+    "Cardiovascular System": {
+        "Anatomy": {
+            "Heart": [
+                {
+                    "question": "Which chamber of the heart pumps oxygenated blood to the body?",
+                    "choices": ["Right Atrium", "Left Atrium", "Right Ventricle", "Left Ventricle"],
+                    "answer": "Left Ventricle"
+                }
+            ]
+        }
+    }
+};
+
+let state = {
+    system: null,
+    subject: null,
+    chapter: null,
+    answers: [],
+    currentQuestion: 0,
+    submitted: false
+};
+
+function render() {
+    const app = document.getElementById('app');
+    if (!state.system) {
+        // Show systems
+        app.innerHTML = `<h3><i class="fa-solid fa-dna icon"></i>Select a System</h3>
+            <ul>${Object.keys(QUESTION_BANK).map(sys =>
+                `<li><button class="btn" onclick="selectSystem('${sys}')"><i class="fa-solid fa-cubes-stacked"></i> ${sys}</button></li>`
+            ).join('')}</ul>`;
+    } else if (!state.subject) {
+        // Show subjects
+        app.innerHTML = `<div class="nav"><a href="#" onclick="resetState();return false;"><i class="fa-solid fa-arrow-left"></i> Back to Systems</a></div>
+            <h3><i class="fa-solid fa-brain icon"></i>${state.system}: Select a Subject</h3>
+            <ul>${Object.keys(QUESTION_BANK[state.system]).map(subj =>
+                `<li><button class="btn" onclick="selectSubject('${subj}')"><i class="fa-solid fa-book"></i> ${subj}</button></li>`
+            ).join('')}</ul>`;
+    } else if (!state.chapter) {
+        // Show chapters
+        app.innerHTML = `<div class="nav"><a href="#" onclick="state.subject=null;render();return false;"><i class="fa-solid fa-arrow-left"></i> Back to Subjects</a></div>
+            <h3><i class="fa-solid fa-layer-group icon"></i>${state.system} > ${state.subject}: Select a Chapter</h3>
+            <ul>${Object.keys(QUESTION_BANK[state.system][state.subject]).map(chap =>
+                `<li><button class="btn" onclick="selectChapter('${chap}')"><i class="fa-solid fa-folder-open"></i> ${chap}</button></li>`
+            ).join('')}</ul>`;
+    } else {
+        // Show questions one by one with navigation and progress bar
+        const questions = QUESTION_BANK[state.system][state.subject][state.chapter];
+        const q = questions[state.currentQuestion];
+        const total = questions.length;
+        const progress = Math.round(((state.currentQuestion + 1) / total) * 100);
+
+        let html = `<div class="nav">
+            <a href="#" onclick="state.chapter=null;state.currentQuestion=0;state.answers=[];state.submitted=false;render();return false;"><i class="fa-solid fa-arrow-left"></i> Back to Chapters</a>
         </div>
-        <h3>Available Books</h3>
-        <ul class="books-list">
-        {% for book in books %}
-            <li class="book-card">
-                <span class="book-title">{{ book['title'] }}</span>
-                <span class="book-desc">{{ book['description'] }}</span>
-                <span class="book-price">Price: {{ book['price'] }} EGP</span>
-                <div class="book-actions">
-                {% if book['title'] in cart %}
-                    <form method="post" action="/remove_from_cart" style="display:inline;">
-                        <input type="hidden" name="user_id" value="{{ user_id }}">
-                        <input type="hidden" name="title" value="{{ book['title'] }}">
-                        <button class="btn btn-remove" type="submit">Remove from Cart</button>
-                    </form>
-                {% else %}
-                    <form method="post" action="/add_to_cart" style="display:inline;">
-                        <input type="hidden" name="user_id" value="{{ user_id }}">
-                        <input type="hidden" name="title" value="{{ book['title'] }}">
-                        <button class="btn btn-add" type="submit">Add to Cart</button>
-                    </form>
-                {% endif %}
-                </div>
-            </li>
-        {% endfor %}
-        </ul>
-        <h3>Your Cart</h3>
-        <ul class="cart-list">
-        {% for item in cart %}
-            <li>{{ item }}</li>
-        {% else %}
-            <li style="color:#888;">Your cart is empty.</li>
-        {% endfor %}
-        </ul>
-        <div class="pay-section">
-            <form method="post" action="/pay_vodafone">
-                <input type="hidden" name="user_id" value="{{ user_id }}">
-                <button class="btn-pay" type="submit">💳 Pay by Vodafone</button>
-            </form>
-        </div>
-    </div>
+        <div class="chapter-title"><i class="fa-solid fa-book-open"></i> ${state.system} > ${state.subject} > ${state.chapter}</div>
+        <div class="progress-bar-bg"><div class="progress-bar" style="width:${progress}%"></div></div>
+        <div class="question-number"><i class="fa-solid fa-question"></i> Question ${state.currentQuestion + 1} of ${total}</div>
+        <form id="quizForm">`;
+
+        html += `<div style="margin-bottom:18px;">
+            <b>${q.question}</b><br>`;
+        q.choices.forEach(choice => {
+            const checked = state.answers[state.currentQuestion] === choice ? "checked" : "";
+            const selected = state.answers[state.currentQuestion] === choice ? "selected" : "";
+            html += `<label class="choice ${selected}">
+                <input type="radio" name="q${state.currentQuestion}" value="${choice}" ${checked} required> ${choice}
+            </label>`;
+        });
+        if (state.submitted) {
+            if (state.answers[state.currentQuestion] === q.answer) {
+                html += `<span class="correct"><i class="fa-solid fa-circle-check"></i> Correct!</span>`;
+            } else {
+                html += `<span class="wrong"><i class="fa-solid fa-circle-xmark"></i> Wrong. Correct: ${q.answer}</span>`;
+            }
+        }
+        html += `</div>`;
+
+        html += `<div class="question-nav">`;
+        html += `<button type="button" class="btn" onclick="prevQuestion()" ${state.currentQuestion === 0 ? "disabled" : ""}><i class="fa-solid fa-arrow-left"></i> Previous</button>`;
+        if (state.currentQuestion < total - 1) {
+            html += `<button type="button" class="btn" onclick="nextQuestion()" ${!state.answers[state.currentQuestion] ? "disabled" : ""}>Next <i class="fa-solid fa-arrow-right"></i></button>`;
+        } else {
+            html += `<button type="submit" class="btn" ${!state.answers[state.currentQuestion] ? "disabled" : ""}><i class="fa-solid fa-check"></i> Submit All</button>`;
+        }
+        html += `</div></form>`;
+
+        if (state.submitted) {
+            const score = questions.reduce((acc, q, i) => acc + (state.answers[i] === q.answer ? 1 : 0), 0);
+            html += `<div class="score"><i class="fa-solid fa-star"></i> Your Score: <b>${score} / ${questions.length}</b></div>
+            <div style="text-align:center;margin-top:10px;">
+                <button class="restart-btn" onclick="restartQuiz()"><i class="fa-solid fa-rotate-left"></i> Restart Chapter</button>
+            </div>`;
+        }
+
+        app.innerHTML = html;
+
+        document.getElementById('quizForm').onsubmit = function(e) {
+            e.preventDefault();
+            // Only allow submit if all questions are answered
+            if (state.answers.length === total && state.answers.every(ans => ans)) {
+                state.submitted = true;
+                render();
+            }
+        };
+
+        // Save answer on radio click
+        document.querySelectorAll('input[type=radio]').forEach(radio => {
+            radio.onchange = function() {
+                state.answers[state.currentQuestion] = this.value;
+                render();
+            };
+        });
+    }
+}
+
+function selectSystem(sys) {
+    state.system = sys;
+    state.subject = null;
+    state.chapter = null;
+    state.answers = [];
+    state.currentQuestion = 0;
+    state.submitted = false;
+    render();
+}
+function selectSubject(subj) {
+    state.subject = subj;
+    state.chapter = null;
+    state.answers = [];
+    state.currentQuestion = 0;
+    state.submitted = false;
+    render();
+}
+function selectChapter(chap) {
+    state.chapter = chap;
+    state.answers = [];
+    state.currentQuestion = 0;
+    state.submitted = false;
+    render();
+}
+function resetState() {
+    state = {system: null, subject: null, chapter: null, answers: [], currentQuestion: 0, submitted: false};
+    render();
+}
+function prevQuestion() {
+    if (state.currentQuestion > 0) {
+        state.currentQuestion--;
+        render();
+    }
+}
+function nextQuestion() {
+    const questions = QUESTION_BANK[state.system][state.subject][state.chapter];
+    if (state.currentQuestion < questions.length - 1 && state.answers[state.currentQuestion]) {
+        state.currentQuestion++;
+        render();
+    }
+}
+function restartQuiz() {
+    state.answers = [];
+    state.currentQuestion = 0;
+    state.submitted = false;
+    render();
+}
+
+render();
+</script>
 </body>
 </html>
