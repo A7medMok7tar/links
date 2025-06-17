@@ -3,58 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <title>Medical Question Bank</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1.0">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root {
-            --tg-bg: #fff;
-            --tg-text: #222;
-            --tg-accent: #229ED9;
-            --tg-accent2: #e8f5fe;
-            --tg-correct: #22c55e;
-            --tg-wrong: #ef4444;
-        }
-        html[data-theme='dark'] {
-            --tg-bg: #181c23;
-            --tg-text: #f3f3f3;
-            --tg-accent: #229ED9;
-            --tg-accent2: #22303c;
-            --tg-correct: #22c55e;
-            --tg-wrong: #ef4444;
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden !important;
+            touch-action: none;
         }
         body {
-            background: var(--tg-bg);
-            color: var(--tg-text);
+            background: var(--tg-bg, #fff);
+            color: var(--tg-text, #222);
             font-family: 'Segoe UI', Arial, sans-serif;
-            margin: 0;
+            height: 100vh;
+            width: 100vw;
+            overscroll-behavior: none;
         }
         .container {
             max-width: 700px;
             margin: 0 auto;
-            background: var(--tg-bg);
+            background: var(--tg-bg, #fff);
             border-radius: 18px;
             box-shadow: 0 4px 24px rgba(34,158,217,0.07);
             padding: 18px 0 10px 0;
             min-height: 100vh;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            overflow: hidden;
+        }
+        #app {
+            flex: 1 1 auto;
+            overflow: hidden;
         }
         h2 {
             text-align: center;
             margin-top: 0;
             font-size: 2em;
-            color: var(--tg-accent);
+            color: var(--tg-accent, #229ED9);
             font-weight: 800;
             letter-spacing: 1px;
         }
         h3 {
             text-align: center;
             margin-top: 0;
-            color: var(--tg-accent);
+            color: var(--tg-accent, #229ED9);
             font-weight: 700;
         }
-        ul { list-style: none; padding: 0; }
+        ul { list-style: none; padding: 0; margin: 0; }
         li { margin-bottom: 14px; }
         .btn, button {
-            background: var(--tg-accent);
+            background: var(--tg-accent, #229ED9);
             color: #fff; font-weight: 700; border: none; border-radius: 10px;
             padding: 14px 0; cursor: pointer; font-size: 1.08em; margin: 6px 0;
             width: 100%;
@@ -68,7 +70,7 @@
             display: flex;
             align-items: center;
             margin: 10px 0;
-            background: var(--tg-accent2);
+            background: var(--tg-accent2, #e8f5fe);
             border-radius: 9px;
             padding: 14px 12px;
             cursor: pointer;
@@ -76,20 +78,20 @@
             min-height: 48px;
             transition: none;
         }
-        .choice input[type=radio] { margin-right: 14px; width: 22px; height: 22px; accent-color: var(--tg-accent); }
+        .choice input[type=radio] { margin-right: 14px; width: 22px; height: 22px; accent-color: var(--tg-accent, #229ED9); }
         .choice.selected { background: #c7f9cc; }
-        .choice.correct { background: #bbf7d0; color: var(--tg-correct); font-weight: bold; }
-        .choice.wrong { background: #fecaca; color: var(--tg-wrong); font-weight: bold; }
+        .choice.correct { background: #bbf7d0; color: var(--tg-correct, #22c55e); font-weight: bold; }
+        .choice.wrong { background: #fecaca; color: var(--tg-wrong, #ef4444); font-weight: bold; }
         .score {
             text-align: center;
             font-size: 1.3em;
             margin-top: 22px;
-            color: var(--tg-accent);
+            color: var(--tg-accent, #229ED9);
             font-weight: 700;
         }
         .nav { margin-bottom: 18px; }
         .nav a {
-            color: var(--tg-accent);
+            color: var(--tg-accent, #229ED9);
             text-decoration: none;
             margin-right: 10px;
             font-weight: 600;
@@ -103,7 +105,7 @@
         }
         .progress-bar {
             height: 100%;
-            background: linear-gradient(90deg, var(--tg-accent) 0%, #38b2ac 100%);
+            background: linear-gradient(90deg, var(--tg-accent, #229ED9) 0%, #38b2ac 100%);
             border-radius: 10px;
             transition: none;
         }
@@ -125,7 +127,7 @@
         }
         .question-number {
             font-size: 1.1em;
-            color: var(--tg-accent);
+            color: var(--tg-accent, #229ED9);
             margin-bottom: 8px;
             font-weight: 600;
         }
@@ -167,6 +169,7 @@
             color: #229ED9;
             font-weight: 700;
             font-size: 1.1em;
+            user-select: none;
         }
         .system-card:hover, .system-card:active {
             box-shadow: 0 4px 24px rgba(34,158,217,0.13);
@@ -427,6 +430,15 @@ function restartQuiz() {
 if (window.Telegram && Telegram.WebApp) {
     Telegram.WebApp.onEvent('themeChanged', applyTelegramTheme);
 }
+
+// Prevent scrolling/touchmove
+window.addEventListener('touchmove', function(e) {
+    e.preventDefault();
+}, { passive: false });
+
+window.addEventListener('scroll', function(e) {
+    window.scrollTo(0, 0);
+});
 
 // Initial render
 renderSystems();
