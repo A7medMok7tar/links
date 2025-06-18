@@ -1,391 +1,361 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-    <meta name="format-detection" content="telephone=no" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="MobileOptimized" content="176" />
-    <meta name="HandheldFriendly" content="True" />
-    <meta name="robots" content="noindex,nofollow" />
-    <title>Medical Question Bank</title>
+  <meta charset="UTF-8" />
+  <title>Medical Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: var(--tg-theme-bg-color, #ffffff);
+      --text: var(--tg-theme-text-color, #000000);
+      --card-bg: rgba(255, 255, 255, 0.8);
+      --btn-bg: var(--tg-theme-button-color, #0088cc);
+      --btn-text: var(--tg-theme-button-text-color, #ffffff);
+    }
 
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        :root {
-            --tg-bg: #fff;
-            --tg-text: #222;
-            --tg-accent: #229ED9;
-            --tg-accent2: #e8f5fe;
-            --tg-correct: #22c55e;
-            --tg-wrong: #ef4444;
-        }
-        html[data-theme='dark'] {
-            --tg-bg: #181c23;
-            --tg-text: #f3f3f3;
-            --tg-accent: #229ED9;
-            --tg-accent2: #22303c;
-            --tg-correct: #22c55e;
-            --tg-wrong: #ef4444;
-        }
-        body {
-            background: var(--tg-bg);
-            color: var(--tg-text);
-            font-family: 'Segoe UI', Arial, sans-serif;
-            margin: 0;
-        }
-        .container {
-            max-width: 700px;
-            margin: 0 auto;
-            background: var(--tg-bg);
-            border-radius: 18px;
-            box-shadow: 0 4px 24px rgba(34,158,217,0.07);
-            padding: 18px 0 10px 0;
-            min-height: 100vh;
-        }
-        h2 {
-            text-align: center;
-            margin-top: 0;
-            font-size: 2em;
-            color: var(--tg-accent);
-            font-weight: 800;
-            letter-spacing: 1px;
-        }
-        h3 {
-            text-align: center;
-            margin-top: 0;
-            color: var(--tg-accent);
-            font-weight: 700;
-        }
-        ul { list-style: none; padding: 0; }
-        li { margin-bottom: 14px; }
-        .btn, button {
-            background: var(--tg-accent);
-            color: #fff; font-weight: 700; border: none; border-radius: 10px;
-            padding: 14px 0; cursor: pointer; font-size: 1.08em; margin: 6px 0;
-            width: 100%;
-            display: block;
-            transition: none;
-        }
-        .btn:active, button:active {
-            background: #1c8ec0;
-        }
-        .choice {
-            display: flex;
-            align-items: center;
-            margin: 10px 0;
-            background: var(--tg-accent2);
-            border-radius: 9px;
-            padding: 14px 12px;
-            cursor: pointer;
-            font-size: 1.08em;
-            min-height: 48px;
-            transition: none;
-        }
-        .choice input[type=radio] { margin-right: 14px; width: 22px; height: 22px; accent-color: var(--tg-accent); }
-        .choice.selected { background: #c7f9cc; }
-        .choice.correct { background: #bbf7d0; color: var(--tg-correct); font-weight: bold; }
-        .choice.wrong { background: #fecaca; color: var(--tg-wrong); font-weight: bold; }
-        .score {
-            text-align: center;
-            font-size: 1.3em;
-            margin-top: 22px;
-            color: var(--tg-accent);
-            font-weight: 700;
-        }
-        .nav { margin-bottom: 18px; }
-        .nav a {
-            color: var(--tg-accent);
-            text-decoration: none;
-            margin-right: 10px;
-            font-weight: 600;
-            font-size: 1.05em;
-        }
-        .nav a:active { color: #1c8ec0; }
-        .progress-bar-bg {
-            width: 100%; height: 20px; background: #e0e7ef;
-            border-radius: 10px; margin-bottom: 18px; overflow: hidden;
-            box-shadow: 0 1px 4px rgba(34,158,217,0.07);
-        }
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, var(--tg-accent) 0%, #38b2ac 100%);
-            border-radius: 10px;
-            transition: none;
-        }
-        .question-nav {
-            display: flex; justify-content: space-between; align-items: center; margin-top: 18px;
-            gap: 10px;
-        }
-        .icon {
-            margin-right: 8px;
-            vertical-align: middle;
-            width: 1.2em;
-            height: 1.2em;
-        }
-        .chapter-title {
-            text-align: center;
-            font-size: 1.1em;
-            color: #64748b;
-            margin-bottom: 10px;
-        }
-        .question-number {
-            font-size: 1.1em;
-            color: var(--tg-accent);
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-        .restart-btn {
-            background: linear-gradient(90deg, #fbbf24 0%, #f472b6 100%);
-            color: #fff;
-            font-weight: 700;
-            border-radius: 10px;
-            padding: 14px 0;
-            margin-top: 16px;
-            width: 100%;
-            font-size: 1.08em;
-            transition: none;
-        }
-        .restart-btn:active {
-            background: linear-gradient(90deg, #f472b6 0%, #fbbf24 100%);
-        }
-        @media (max-width: 600px) {
-            .container { padding: 0 0 8px 0; }
-            h2 { font-size: 1.2em; }
-            .btn, .restart-btn { font-size: 1em; padding: 12px 0; }
-            .choice { font-size: 1em; padding: 10px 8px; min-height: 38px; }
-        }
-    </style>
+    body {
+      font-family: sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+    }
+
+    h2, h3 {
+      text-align: center;
+    }
+
+    .grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+
+    .card:hover {
+      transform: scale(1.03);
+    }
+
+    #question-section {
+      display: none;
+    }
+
+    #choices button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 2px solid #ccc;
+      background-color: #eee;
+      color: #000;
+    }
+
+    #choices button.correct {
+      background-color: #d4f5d4;
+      border-color: green;
+    }
+
+    #choices button.incorrect {
+      background-color: #f5d4d4;
+      border-color: red;
+    }
+
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .nav-buttons button {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      background-color: var(--btn-bg);
+      color: var(--btn-text);
+      font-weight: bold;
+    }
+
+    #progress-bar {
+      height: 10px;
+      width: 100%;
+      background: #ddd;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    #progress-inner {
+      height: 100%;
+      background: #4caf50;
+      width: 0%;
+      transition: width 0.3s;
+    }
+
+    .hidden { display: none; }
+
+    .back-button {
+      margin-bottom: 15px;
+      background-color: #ccc;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-<div class="container">
-    <h2>
-        <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="#229ED9" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="5" stroke="#229ED9" stroke-width="2"/></svg>
-        Medical Question Bank
-    </h2>
-    <div id="app"></div>
-</div>
-<script>
-const QUESTION_BANK = {
-    "Musculoskeletal System": {
+  <div class="container">
+    <h2>Medical Quiz</h2>
+
+    <div id="system-view" class="grid"></div>
+
+    <div id="subject-view" class="hidden">
+      <button class="back-button" onclick="backToSystems()">← Back</button>
+      <div class="grid" id="subject-grid"></div>
+    </div>
+
+    <div id="chapter-view" class="hidden">
+      <button class="back-button" onclick="backToSubjects()">← Back</button>
+      <div class="grid" id="chapter-grid"></div>
+    </div>
+
+    <div id="question-section" class="hidden">
+      <button class="back-button" onclick="backToChapters()">← Back</button>
+      <div id="progress-bar"><div id="progress-inner"></div></div>
+      <h3 id="question-text"></h3>
+      <div id="choices"></div>
+      <div class="nav-buttons">
+        <button onclick="prevQuestion()">Previous</button>
+        <button onclick="nextQuestion()">Next</button>
+      </div>
+      <div style="margin-top: 10px; text-align: center;">
+        <button onclick="restartQuiz()" style="padding: 10px 20px; background: #f0f0f0; border: none; border-radius: 8px; font-weight: bold;">🔁 Restart Quiz</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const data = {
+      "Musculoskeletal": {
         "Anatomy": {
-            "Bones": [
-                {
-                    "question": "Which bone is the longest in the human body?",
-                    "choices": ["Femur", "Tibia", "Humerus", "Fibula"],
-                    "answer": "Femur"
-                },
-                {
-                    "question": "How many bones are in the adult human body?",
-                    "choices": ["206", "210", "201", "208"],
-                    "answer": "206"
-                }
-            ],
-            "Joints": [
-                {
-                    "question": "Which joint is a ball and socket joint?",
-                    "choices": ["Knee", "Elbow", "Shoulder", "Ankle"],
-                    "answer": "Shoulder"
-                }
-            ]
+          "Upper Limb": [
+            {
+              question: "Which nerve innervates the deltoid muscle?",
+              choices: ["Radial", "Ulnar", "Axillary", "Median"],
+              correct: 2
+            },
+            {
+              question: "What type of joint is the shoulder?",
+              choices: ["Hinge", "Ball and Socket", "Pivot", "Saddle"],
+              correct: 1
+            }
+          ]
         },
         "Physiology": {
-            "Muscle Contraction": [
-                {
-                    "question": "Which ion is essential for muscle contraction?",
-                    "choices": ["Sodium", "Potassium", "Calcium", "Magnesium"],
-                    "answer": "Calcium"
-                }
-            ]
-        }
-    },
-    "Cardiovascular System": {
-        "Anatomy": {
-            "Heart": [
-                {
-                    "question": "Which chamber of the heart pumps oxygenated blood to the body?",
-                    "choices": ["Right Atrium", "Left Atrium", "Right Ventricle", "Left Ventricle"],
-                    "answer": "Left Ventricle"
-                }
-            ]
-        }
-    }
-};
-
-let state = {
-    system: null,
-    subject: null,
-    chapter: null,
-    answers: [],
-    currentQuestion: 0,
-    submitted: false,
-    showFeedback: []
-};
-
-function applyTelegramTheme() {
-    if (window.Telegram && Telegram.WebApp) {
-        const theme = Telegram.WebApp.colorScheme || 'light';
-        document.documentElement.setAttribute('data-theme', theme);
-        Telegram.WebApp.expand();
-    }
-}
-applyTelegramTheme();
-
-function renderSystems() {
-    const app = document.getElementById('app');
-    app.innerHTML = `<h3>
-        <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="#229ED9" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="5" stroke="#229ED9" stroke-width="2"/></svg>
-        Select a System</h3>
-        <ul>${Object.keys(QUESTION_BANK).map(sys =>
-            `<li><button class="btn" onclick="selectSystem('${sys}')">${sys}</button></li>`
-        ).join('')}</ul>`;
-}
-function renderSubjects() {
-    const app = document.getElementById('app');
-    app.innerHTML = `<div class="nav"><a href="#" onclick="resetState();return false;">&larr; Back to Systems</a></div>
-        <h3>${state.system}: Select a Subject</h3>
-        <ul>${Object.keys(QUESTION_BANK[state.system]).map(subj =>
-            `<li><button class="btn" onclick="selectSubject('${subj}')">${subj}</button></li>`
-        ).join('')}</ul>`;
-}
-function renderChapters() {
-    const app = document.getElementById('app');
-    app.innerHTML = `<div class="nav"><a href="#" onclick="state.subject=null;renderSubjects();return false;">&larr; Back to Subjects</a></div>
-        <h3>${state.system} > ${state.subject}: Select a Chapter</h3>
-        <ul>${Object.keys(QUESTION_BANK[state.system][state.subject]).map(chap =>
-            `<li><button class="btn" onclick="selectChapter('${chap}')">${chap}</button></li>`
-        ).join('')}</ul>`;
-}
-function renderQuestion() {
-    const app = document.getElementById('app');
-    const questions = QUESTION_BANK[state.system][state.subject][state.chapter];
-    const q = questions[state.currentQuestion];
-    const total = questions.length;
-    const progress = Math.round(((state.currentQuestion + 1) / total) * 100);
-
-    let html = `<div class="nav">
-        <a href="#" onclick="state.chapter=null;state.currentQuestion=0;state.answers=[];state.submitted=false;state.showFeedback=[];renderChapters();return false;">&larr; Back to Chapters</a>
-    </div>
-    <div class="chapter-title">${state.system} > ${state.subject} > ${state.chapter}</div>
-    <div class="progress-bar-bg"><div class="progress-bar" style="width:${progress}%"></div></div>
-    <div class="question-number">Question ${state.currentQuestion + 1} of ${total}</div>
-    <form id="quizForm">`;
-
-    html += `<div style="margin-bottom:18px;">
-        <b>${q.question}</b><br>`;
-    q.choices.forEach(choice => {
-        let classes = "choice";
-        let icon = "";
-        if (state.showFeedback[state.currentQuestion]) {
-            if (choice === q.answer) {
-                classes += " correct";
-                icon = ' <svg class="icon" viewBox="0 0 24 24" fill="none" width="20" height="20"><circle cx="12" cy="12" r="10" stroke="#22c55e" stroke-width="2"/><path d="M8 12l2.5 2.5L16 9" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+          "Muscle Contraction": [
+            {
+              question: "What ion is essential for muscle contraction?",
+              choices: ["Sodium", "Potassium", "Calcium", "Magnesium"],
+              correct: 2
+            },
+            {
+              question: "What is the contractile unit of a muscle?",
+              choices: ["Myofibril", "Actin", "Sarcomere", "Myosin"],
+              correct: 2
             }
-            if (state.answers[state.currentQuestion] === choice && choice !== q.answer) {
-                classes += " wrong";
-                icon = ' <svg class="icon" viewBox="0 0 24 24" fill="none" width="20" height="20"><circle cx="12" cy="12" r="10" stroke="#ef4444" stroke-width="2"/><path d="M9 9l6 6M15 9l-6 6" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/></svg>';
-            }
-        } else if (state.answers[state.currentQuestion] === choice) {
-            classes += " selected";
+          ]
         }
-        const checked = state.answers[state.currentQuestion] === choice ? "checked" : "";
-        html += `<label class="${classes}">
-            <input type="radio" name="q${state.currentQuestion}" value="${choice}" ${checked} ${state.showFeedback[state.currentQuestion] ? "disabled" : ""}> ${choice}${icon}
-        </label>`;
-    });
-    html += `</div>`;
-
-    html += `<div class="question-nav">`;
-    html += `<button type="button" class="btn" onclick="prevQuestion()" ${state.currentQuestion === 0 ? "disabled" : ""}>&larr; Previous</button>`;
-    if (state.currentQuestion < total - 1) {
-        html += `<button type="button" class="btn" onclick="nextQuestion()" ${!state.showFeedback[state.currentQuestion] ? "disabled" : ""}>Next &rarr;</button>`;
-    }
-    html += `</div></form>`;
-
-    // Show score after last question is answered
-    if (state.currentQuestion === total - 1 && state.showFeedback[total - 1]) {
-        const score = questions.reduce((acc, q, i) => acc + (state.answers[i] === q.answer ? 1 : 0), 0);
-        html += `<div class="score">Your Score: <b>${score} / ${questions.length}</b></div>
-        <div style="text-align:center;margin-top:10px;">
-            <button class="restart-btn" onclick="restartQuiz()">Restart Chapter</button>
-        </div>`;
-    }
-
-    app.innerHTML = html;
-
-    document.getElementById('quizForm').onsubmit = function(e) {
-        e.preventDefault();
+      },
+      "Cardiopulmonary": {
+        "Physiology": {
+          "Heart": [
+            {
+              question: "What is the pacemaker of the heart?",
+              choices: ["AV Node", "SA Node", "Bundle of His", "Purkinje fibers"],
+              correct: 1
+            },
+            {
+              question: "Which valve is between left atrium and ventricle?",
+              choices: ["Tricuspid", "Mitral", "Aortic", "Pulmonary"],
+              correct: 1
+            }
+          ]
+        }
+      },
+      "Gastrointestinal": {
+        "Histology": {
+          "Small Intestine": [
+            {
+              question: "What increases surface area in the small intestine?",
+              choices: ["Villi", "Crypts", "Cilia", "Rugae"],
+              correct: 0
+            },
+            {
+              question: "Which cells secrete mucus?",
+              choices: ["Goblet", "Paneth", "Chief", "Enterocytes"],
+              correct: 0
+            }
+          ]
+        }
+      }
     };
 
-    // Save answer on radio click and show feedback
-    document.querySelectorAll('input[type=radio]').forEach(radio => {
-        radio.onchange = function() {
-            state.answers[state.currentQuestion] = this.value;
-            state.showFeedback[state.currentQuestion] = true;
-            renderQuestion();
+    let currentSystem, currentSubject, currentChapter;
+    let questions = [], currentIndex = 0;
+
+    const systemView = document.getElementById("system-view");
+    const subjectView = document.getElementById("subject-view");
+    const subjectGrid = document.getElementById("subject-grid");
+    const chapterView = document.getElementById("chapter-view");
+    const chapterGrid = document.getElementById("chapter-grid");
+    const questionSection = document.getElementById("question-section");
+    const questionText = document.getElementById("question-text");
+    const choicesDiv = document.getElementById("choices");
+
+    function showSystems() {
+      systemView.innerHTML = "";
+      for (let sys in data) {
+        const card = createCard(sys, () => showSubjects(sys));
+        systemView.appendChild(card);
+      }
+    }
+
+    function showSubjects(system) {
+      currentSystem = system;
+      systemView.classList.add("hidden");
+      subjectView.classList.remove("hidden");
+      subjectGrid.innerHTML = "";
+      for (let subj in data[system]) {
+        const card = createCard(subj, () => showChapters(system, subj));
+        subjectGrid.appendChild(card);
+      }
+    }
+
+    function showChapters(system, subject) {
+      currentSubject = subject;
+      subjectView.classList.add("hidden");
+      chapterView.classList.remove("hidden");
+      chapterGrid.innerHTML = "";
+      for (let chap in data[system][subject]) {
+        const card = createCard(chap, () => startQuiz(system, subject, chap));
+        chapterGrid.appendChild(card);
+      }
+    }
+
+    function createCard(title, onClick) {
+      const div = document.createElement("div");
+      div.className = "card";
+      div.textContent = title;
+      div.onclick = onClick;
+      return div;
+    }
+
+    function startQuiz(system, subject, chapter) {
+      currentChapter = chapter;
+      chapterView.classList.add("hidden");
+      questionSection.classList.remove("hidden");
+      questions = data[system][subject][chapter];
+      currentIndex = 0;
+      showQuestion();
+    }
+
+    function showQuestion() {
+      const q = questions[currentIndex];
+      questionText.textContent = q.question;
+      choicesDiv.innerHTML = "";
+
+      q.choices.forEach((choice, idx) => {
+        const btn = document.createElement("button");
+        btn.textContent = choice;
+        btn.onclick = () => {
+          disableAllButtons();
+          if (idx === q.correct) {
+            btn.classList.add("correct");
+          } else {
+            btn.classList.add("incorrect");
+            choicesDiv.children[q.correct].classList.add("correct");
+          }
         };
-    });
-}
+        choicesDiv.appendChild(btn);
+      });
 
-function selectSystem(sys) {
-    state.system = sys;
-    state.subject = null;
-    state.chapter = null;
-    state.answers = [];
-    state.currentQuestion = 0;
-    state.submitted = false;
-    state.showFeedback = [];
-    renderSubjects();
-}
-function selectSubject(subj) {
-    state.subject = subj;
-    state.chapter = null;
-    state.answers = [];
-    state.currentQuestion = 0;
-    state.submitted = false;
-    state.showFeedback = [];
-    renderChapters();
-}
-function selectChapter(chap) {
-    state.chapter = chap;
-    state.answers = [];
-    state.currentQuestion = 0;
-    state.submitted = false;
-    state.showFeedback = [];
-    renderQuestion();
-}
-function resetState() {
-    state = {system: null, subject: null, chapter: null, answers: [], currentQuestion: 0, submitted: false, showFeedback: []};
-    renderSystems();
-}
-function prevQuestion() {
-    if (state.currentQuestion > 0) {
-        state.currentQuestion--;
-        renderQuestion();
+      updateProgress();
     }
-}
-function nextQuestion() {
-    const questions = QUESTION_BANK[state.system][state.subject][state.chapter];
-    if (state.currentQuestion < questions.length - 1 && state.showFeedback[state.currentQuestion]) {
-        state.currentQuestion++;
-        renderQuestion();
+
+    function disableAllButtons() {
+      document.querySelectorAll("#choices button").forEach(btn => btn.disabled = true);
     }
-}
-function restartQuiz() {
-    state.answers = [];
-    state.currentQuestion = 0;
-    state.submitted = false;
-    state.showFeedback = [];
-    renderQuestion();
-}
 
-// Listen for Telegram theme changes
-if (window.Telegram && Telegram.WebApp) {
-    Telegram.WebApp.onEvent('themeChanged', applyTelegramTheme);
-}
+    function nextQuestion() {
+      if (currentIndex < questions.length - 1) {
+        currentIndex++;
+        showQuestion();
+      }
+    }
 
-// Initial render
-renderSystems();
-</script>
+    function prevQuestion() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        showQuestion();
+      }
+    }
+
+    function restartQuiz() {
+      currentIndex = 0;
+      showQuestion();
+    }
+
+    function updateProgress() {
+      const percent = ((currentIndex + 1) / questions.length) * 100;
+      document.getElementById("progress-inner").style.width = percent + "%";
+    }
+
+    function applyTelegramTheme() {
+      if (window.Telegram && Telegram.WebApp) {
+        Telegram.WebApp.ready();
+        document.body.style.backgroundColor = Telegram.WebApp.themeParams.bg_color || "#fff";
+        document.body.style.color = Telegram.WebApp.themeParams.text_color || "#000";
+      }
+    }
+
+    function backToSystems() {
+      subjectView.classList.add("hidden");
+      systemView.classList.remove("hidden");
+    }
+
+    function backToSubjects() {
+      chapterView.classList.add("hidden");
+      subjectView.classList.remove("hidden");
+    }
+
+    function backToChapters() {
+      questionSection.classList.add("hidden");
+      chapterView.classList.remove("hidden");
+    }
+
+    window.onload = () => {
+      applyTelegramTheme();
+      showSystems();
+    };
+  </script>
 </body>
 </html>
