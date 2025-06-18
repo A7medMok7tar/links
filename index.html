@@ -2,38 +2,52 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Medical Question Bank</title>
+    <title>Medical Quiz</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1.0">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <style>
         html, body {
             height: 100%;
             margin: 0;
             padding: 0;
-            overflow: hidden !important;
-            touch-action: none;
-        }
-        body {
-            background: var(--tg-bg, #fff);
-            color: var(--tg-text, #222);
-            font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
+            background: #f2f2f7;
+            color: #1c1c1e;
+            font-family: -apple-system, BlinkMacSystemFont, "San Francisco", "Segoe UI", Roboto, Arial, sans-serif;
             font-size: 17px;
             font-weight: 400;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            height: 100vh;
-            width: 100vw;
             overscroll-behavior: none;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        body::-webkit-scrollbar, .container::-webkit-scrollbar { display: none; }
+        .ios-navbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 56px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(60,60,67,0.06);
+            display: flex;
+            align-items: flex-end;
+            padding: 0 20px 8px 20px;
+            z-index: 100;
+        }
+        .ios-title {
+            font-size: 1.7em;
+            font-weight: 700;
+            color: #111;
+            letter-spacing: 0.01em;
         }
         .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: var(--tg-bg, #fff);
-            border-radius: 18px;
-            box-shadow: 0 4px 24px rgba(34,158,217,0.07);
-            padding: 18px 0 10px 0;
-            min-height: 100vh;
-            height: 100vh;
+            max-width: 700px;
+            margin: 72px auto 0 auto;
+            background: #fff;
+            border-radius: 28px;
+            box-shadow: 0 8px 32px rgba(60,60,67,0.08);
+            padding: 0 0 10px 0;
+            min-height: 70vh;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
@@ -42,72 +56,76 @@
         #app {
             flex: 1 1 auto;
             overflow: hidden;
+            padding: 0 18px;
+        }
+        h2, h3 {
+            text-align: center;
+            margin-top: 0;
+            font-family: inherit;
         }
         h2 {
-            text-align: center;
-            margin-top: 0;
-            font-size: 2.1em;
-            color: var(--tg-accent, #229ED9);
-            font-weight: 800;
-            letter-spacing: 1px;
-            font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
+            font-size: 1.3em;
+            color: #007aff;
+            font-weight: 700;
+            margin-bottom: 0.5em;
         }
         h3 {
-            text-align: center;
-            margin-top: 0;
-            color: var(--tg-accent, #229ED9);
-            font-weight: 700;
-            font-size: 1.25em;
-            font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
+            color: #007aff;
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 1em;
         }
         ul { list-style: none; padding: 0; margin: 0; }
         li { margin-bottom: 14px; }
         .btn, button, .restart-btn {
-            background: linear-gradient(90deg, #229ED9 0%, #38b2ac 100%);
-            color: #fff;
-            font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
-            font-weight: 600;
+            background: linear-gradient(180deg, #f9fafb 0%, #e5e5ea 100%);
+            color: #007aff;
+            border-radius: 14px;
             border: none;
-            border-radius: 12px;
-            padding: 14px 0;
-            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 1px 4px rgba(60,60,67,0.08);
+            transition: background 0.15s, box-shadow 0.15s, transform 0.12s;
             font-size: 1.08em;
             margin: 6px 0;
             width: 100%;
             display: block;
-            box-shadow: 0 2px 8px rgba(34,158,217,0.08);
-            transition: background 0.18s, box-shadow 0.18s, transform 0.12s;
             letter-spacing: 0.01em;
-        }
-        .btn:hover, button:hover, .restart-btn:hover {
-            background: linear-gradient(90deg, #38b2ac 0%, #229ED9 100%);
-            box-shadow: 0 4px 16px rgba(34,158,217,0.13);
-            transform: translateY(-1px) scale(1.02);
+            padding: 14px 0;
         }
         .btn:active, button:active, .restart-btn:active {
-            background: linear-gradient(90deg, #229ED9 0%, #38b2ac 100%);
-            box-shadow: 0 1px 4px rgba(34,158,217,0.07);
-            transform: scale(0.98);
+            background: #e5e5ea;
+            color: #0051a8;
+            transform: scale(0.97);
+            box-shadow: 0 1px 2px rgba(60,60,67,0.10);
         }
         .choice {
             display: flex;
             align-items: center;
             margin: 10px 0;
-            background: var(--tg-accent2, #e8f5fe);
-            border-radius: 10px;
-            padding: 14px 12px;
-            cursor: pointer;
+            background: #f2f2f7;
+            border-radius: 12px;
+            border: 1px solid #e5e5ea;
+            color: #222;
             font-size: 1.08em;
             min-height: 48px;
-            font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
             font-weight: 500;
-            transition: background 0.15s, color 0.15s;
-            border: 1.5px solid transparent;
+            transition: background 0.15s, color 0.15s, border 0.15s;
+            padding: 14px 12px;
         }
-        .choice input[type=radio] { margin-right: 14px; width: 22px; height: 22px; accent-color: var(--tg-accent, #229ED9); }
-        .choice.selected { background: #c7f9cc; border-color: #38b2ac; }
-        .choice.correct { background: #bbf7d0; color: var(--tg-correct, #22c55e); font-weight: 700; border-color: #22c55e; }
-        .choice.wrong { background: #fecaca; color: var(--tg-wrong, #ef4444); font-weight: 700; border-color: #ef4444; }
+        .choice input[type=radio] { margin-right: 14px; width: 22px; height: 22px; accent-color: #007aff; }
+        .choice.selected, .choice.correct {
+            background: #d1f2ff;
+            border-color: #007aff;
+            color: #007aff;
+        }
+        .choice.wrong {
+            background: #ffd1d1;
+            border-color: #ff3b30;
+            color: #ff3b30;
+        }
+        .choice:active {
+            transform: scale(0.98);
+        }
         .nav {
             margin-bottom: 18px;
             display: flex;
@@ -120,41 +138,28 @@
             padding: 0 8px 0 0;
             cursor: pointer;
             font-size: 1.3em;
-            color: var(--tg-accent, #229ED9);
+            color: #007aff;
             display: flex;
             align-items: center;
             transition: color 0.15s;
         }
-        .nav .home-btn:hover { color: #1c8ec0; }
-        .nav .sound-btn {
-            background: none;
-            border: none;
-            padding: 0 0 0 8px;
-            cursor: pointer;
-            font-size: 1.3em;
-            color: var(--tg-accent, #229ED9);
-            display: flex;
-            align-items: center;
-            transition: color 0.15s;
-        }
-        .nav .sound-btn:hover { color: #1c8ec0; }
+        .nav .home-btn:hover { color: #0051a8; }
         .nav a {
-            color: var(--tg-accent, #229ED9);
+            color: #007aff;
             text-decoration: none;
             margin-right: 10px;
             font-weight: 600;
             font-size: 1.05em;
-            font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
         }
-        .nav a:active { color: #1c8ec0; }
+        .nav a:active { color: #0051a8; }
         .progress-bar-bg {
-            width: 100%; height: 20px; background: #e0e7ef;
+            width: 100%; height: 20px; background: #e5e5ea;
             border-radius: 10px; margin-bottom: 18px; overflow: hidden;
-            box-shadow: 0 1px 4px rgba(34,158,217,0.07);
+            box-shadow: 0 1px 4px rgba(60,60,67,0.07);
         }
         .progress-bar {
             height: 100%;
-            background: linear-gradient(90deg, var(--tg-accent, #229ED9) 0%, #38b2ac 100%);
+            background: linear-gradient(90deg, #007aff 0%, #34c759 100%);
             border-radius: 10px;
             transition: width 0.4s cubic-bezier(.4,1.4,.6,1);
         }
@@ -162,54 +167,33 @@
             display: flex; justify-content: space-between; align-items: center; margin-top: 18px;
             gap: 10px;
         }
-        .icon {
-            margin-right: 8px;
-            vertical-align: middle;
-            width: 1.2em;
-            height: 1.2em;
-        }
         .chapter-title {
             text-align: center;
             font-size: 1.1em;
-            color: #64748b;
+            color: #636366;
             margin-bottom: 10px;
-            font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
         }
         .question-number {
             font-size: 1.1em;
-            color: var(--tg-accent, #229ED9);
+            color: #007aff;
             margin-bottom: 8px;
             font-weight: 600;
-            font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
         }
-        .bookmark-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 1.5em;
-            color: #fbbf24;
-            margin-left: 8px;
-            vertical-align: middle;
-            transition: color 0.15s;
-        }
-        .bookmark-btn[aria-pressed="true"] { color: #f59e42; }
-        .bookmark-btn:active { color: #f472b6; }
         .restart-btn {
-            background: linear-gradient(90deg, #fbbf24 0%, #f472b6 100%);
-            color: #fff;
+            background: linear-gradient(180deg, #fffbe6 0%, #ffe5ec 100%);
+            color: #ff9500;
             font-weight: 700;
-            border-radius: 12px;
+            border-radius: 14px;
             padding: 14px 0;
             margin-top: 16px;
             width: 100%;
             font-size: 1.08em;
             box-shadow: 0 2px 8px rgba(253,186,116,0.09);
-            font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
         }
-        .restart-btn:hover {
-            background: linear-gradient(90deg, #f472b6 0%, #fbbf24 100%);
+        .restart-btn:active {
+            background: #ffe5ec;
+            color: #c76a00;
         }
-        /* System cards */
         .system-cards {
             display: flex;
             flex-wrap: wrap;
@@ -219,27 +203,27 @@
             padding: 0;
         }
         .system-card {
-            background: linear-gradient(135deg, #e0e7ff 0%, #f0fff4 100%);
-            border-radius: 16px;
-            box-shadow: 0 2px 12px rgba(34,158,217,0.07);
+            background: #f2f2f7;
+            border-radius: 18px;
+            border: none;
+            box-shadow: 0 1px 4px rgba(60,60,67,0.07);
             padding: 28px 18px 18px 18px;
             min-width: 140px;
             max-width: 220px;
             flex: 1 1 160px;
             text-align: center;
             cursor: pointer;
-            transition: box-shadow 0.15s, transform 0.12s;
-            border: 2px solid #229ED9;
-            color: #229ED9;
+            color: #007aff;
             font-weight: 700;
             font-size: 1.1em;
             user-select: none;
-            font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
+            margin-bottom: 10px;
+            transition: box-shadow 0.15s, transform 0.12s;
         }
-        .system-card:hover, .system-card:active {
-            box-shadow: 0 4px 24px rgba(34,158,217,0.13);
-            background: linear-gradient(135deg, #f0fff4 0%, #e0e7ff 100%);
-            transform: translateY(-2px) scale(1.03);
+        .system-card:active {
+            box-shadow: 0 4px 24px rgba(60,60,67,0.13);
+            background: #e5e5ea;
+            transform: scale(0.98);
         }
         .system-card .sys-icon {
             display: block;
@@ -248,13 +232,10 @@
             width: 1.5em;
             height: 1.5em;
         }
-        @media (max-width: 900px) {
-            .container { max-width: 100vw; }
-        }
         @media (max-width: 600px) {
-            .container { padding: 0 0 8px 0; }
-            h2 { font-size: 1.2em; }
-            h3 { font-size: 1.05em; }
+            .container { padding: 0 0 8px 0; margin-top: 64px; }
+            h2 { font-size: 1.1em; }
+            h3 { font-size: 1em; }
             .btn, .restart-btn { font-size: 1em; padding: 12px 0; }
             .choice { font-size: 1em; padding: 10px 8px; min-height: 38px; }
             .system-cards { gap: 10px; }
@@ -268,16 +249,12 @@
     </style>
 </head>
 <body>
-<div class="container">
-    <h2>
-        <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="#229ED9" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="5" stroke="#229ED9" stroke-width="2"/></svg>
-        Medical Question Bank
-    </h2>
-    <div id="app"></div>
-    <!-- Sound effects -->
-    <audio id="audio-correct" src="https://cdn.jsdelivr.net/gh/saintplay/sfx@master/correct.mp3" preload="auto"></audio>
-    <audio id="audio-wrong" src="https://cdn.jsdelivr.net/gh/saintplay/sfx@master/wrong.mp3" preload="auto"></audio>
-</div>
+    <div class="ios-navbar">
+        <span class="ios-title">Medical Quiz</span>
+    </div>
+    <div class="container">
+        <div id="app"></div>
+    </div>
 <script>
 const QUESTION_BANK = {
     "Musculoskeletal System": {
@@ -365,7 +342,6 @@ const QUESTION_BANK = {
     }
 };
 
-// --- State ---
 let state = {
     system: null,
     subject: null,
@@ -374,12 +350,9 @@ let state = {
     currentQuestion: 0,
     submitted: false,
     showFeedback: [],
-    randomizedQuestions: [],
-    bookmarks: {},
-    soundOn: true
+    randomizedQuestions: []
 };
 
-// --- Utility ---
 function shuffleArray(arr) {
     let a = arr.slice();
     for (let i = a.length - 1; i > 0; i--) {
@@ -389,56 +362,14 @@ function shuffleArray(arr) {
     return a;
 }
 
-// --- Theme ---
-function applyTelegramTheme() {
-    if (window.Telegram && Telegram.WebApp) {
-        const theme = Telegram.WebApp.colorScheme || 'light';
-        document.documentElement.setAttribute('data-theme', theme);
-        Telegram.WebApp.expand();
-    }
-}
-applyTelegramTheme();
-
-// --- Navigation ---
-function renderHomeButton() {
-    return `<button class="home-btn" title="Home" onclick="resetState()" aria-label="Home">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M3 12L12 4l9 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 10v10h14V10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>`;
-}
-function renderSoundButton() {
-    return `<button class="sound-btn" title="${state.soundOn ? "Mute" : "Unmute"}" onclick="toggleSound()" aria-label="Sound">
-        ${state.soundOn
-            ? `<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M11 5L6 9H2v6h4l5 4V5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 9v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`
-            : `<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M11 5L6 9H2v6h4l5 4V5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M23 9l-6 6M17 9l6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`
-        }
-    </button>`;
-}
-function toggleSound() {
-    state.soundOn = !state.soundOn;
-    // re-render current screen to update icon
-    if (state.system && state.subject && state.chapter) {
-        renderQuestion();
-    } else if (state.system && state.subject) {
-        renderChapters();
-    } else if (state.system) {
-        renderSubjects();
-    } else {
-        renderSystems();
-    }
-}
-
-// --- Main Screens ---
 function renderSystems() {
     const icons = [
-        `<svg class="sys-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#229ED9" stroke-width="2"/><path d="M8 12l2.5 2.5L16 9" stroke="#229ED9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-        `<svg class="sys-icon" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="4" stroke="#229ED9" stroke-width="2"/><path d="M8 12h8M12 8v8" stroke="#229ED9" stroke-width="2" stroke-linecap="round"/></svg>`
+        `<svg class="sys-icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#007aff" stroke-width="2"/><path d="M8 12l2.5 2.5L16 9" stroke="#007aff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+        `<svg class="sys-icon" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="4" stroke="#007aff" stroke-width="2"/><path d="M8 12h8M12 8v8" stroke="#007aff" stroke-width="2" stroke-linecap="round"/></svg>`
     ];
     const systemNames = Object.keys(QUESTION_BANK);
     const app = document.getElementById('app');
-    app.innerHTML = `<div class="nav">${renderHomeButton()}${renderSoundButton()}</div>
-        <h3>
-        <svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="#229ED9" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="5" stroke="#229ED9" stroke-width="2"/></svg>
-        Select a System</h3>
+    app.innerHTML = `<h2>Select a System</h2>
         <div class="system-cards">
         ${systemNames.map((sys, i) =>
             `<div class="system-card" onclick="selectSystem('${sys}')">
@@ -450,7 +381,9 @@ function renderSystems() {
 }
 function renderSubjects() {
     const app = document.getElementById('app');
-    app.innerHTML = `<div class="nav">${renderHomeButton()}${renderSoundButton()}<a href="#" onclick="resetState();return false;">&larr; Back to Systems</a></div>
+    app.innerHTML = `<div class="nav"><button class="home-btn" onclick="resetState()" aria-label="Home">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M3 12L12 4l9 8" stroke="#007aff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 10v10h14V10" stroke="#007aff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button></div>
         <h3>${state.system}: Select a Subject</h3>
         <ul>${Object.keys(QUESTION_BANK[state.system]).map(subj =>
             `<li><button class="btn" onclick="selectSubject('${subj}')">${subj}</button></li>`
@@ -458,7 +391,10 @@ function renderSubjects() {
 }
 function renderChapters() {
     const app = document.getElementById('app');
-    app.innerHTML = `<div class="nav">${renderHomeButton()}${renderSoundButton()}<a href="#" onclick="state.subject=null;renderSubjects();return false;">&larr; Back to Subjects</a></div>
+    app.innerHTML = `<div class="nav"><button class="home-btn" onclick="resetState()" aria-label="Home">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M3 12L12 4l9 8" stroke="#007aff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 10v10h14V10" stroke="#007aff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <a href="#" onclick="state.subject=null;renderSubjects();return false;">&larr; Back</a></div>
         <h3>${state.system} > ${state.subject}: Select a Chapter</h3>
         <ul>${Object.keys(QUESTION_BANK[state.system][state.subject]).map(chap =>
             `<li><button class="btn" onclick="selectChapter('${chap}')">${chap}</button></li>`
@@ -471,23 +407,11 @@ function renderQuestion() {
     const total = questions.length;
     const progress = Math.round(((state.currentQuestion + 1) / total) * 100);
 
-    // Bookmarks
-    const chapterKey = `${state.system}|${state.subject}|${state.chapter}`;
-    if (!state.bookmarks[chapterKey]) state.bookmarks[chapterKey] = [];
-    const isBookmarked = state.bookmarks[chapterKey].includes(state.currentQuestion);
-
-    let html = `<div class="nav">
-        ${renderHomeButton()}${renderSoundButton()}
-        <a href="#" onclick="state.chapter=null;state.currentQuestion=0;state.answers=[];state.submitted=false;state.showFeedback=[];renderChapters();return false;">&larr; Back to Chapters</a>
-    </div>
-    <div class="chapter-title">${state.system} > ${state.subject} > ${state.chapter}
-        <button class="bookmark-btn" aria-label="Bookmark" aria-pressed="${isBookmarked}" onclick="toggleBookmark(${state.currentQuestion})" title="Bookmark this question">
-            ${isBookmarked
-                ? `<svg width="24" height="24" viewBox="0 0 24 24" fill="#fbbf24"><path d="M5 3a2 2 0 0 0-2 2v16l9-4 9 4V5a2 2 0 0 0-2-2H5z"/></svg>`
-                : `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2"><path d="M5 3a2 2 0 0 0-2 2v16l9-4 9 4V5a2 2 0 0 0-2-2H5z"/></svg>`
-            }
-        </button>
-    </div>
+    let html = `<div class="nav"><button class="home-btn" onclick="resetState()" aria-label="Home">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M3 12L12 4l9 8" stroke="#007aff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 10v10h14V10" stroke="#007aff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <a href="#" onclick="state.chapter=null;state.currentQuestion=0;state.answers=[];state.submitted=false;state.showFeedback=[];renderChapters();return false;">&larr; Back</a></div>
+    <div class="chapter-title">${state.system} > ${state.subject} > ${state.chapter}</div>
     <div class="progress-bar-bg"><div class="progress-bar" style="width:${progress}%"></div></div>
     <div class="question-number">Question ${state.currentQuestion + 1} of ${total}</div>
     <form id="quizForm">`;
@@ -500,11 +424,9 @@ function renderQuestion() {
         if (state.showFeedback[state.currentQuestion]) {
             if (choice === q.answer) {
                 classes += " correct";
-                icon = ' <svg class="icon" viewBox="0 0 24 24" fill="none" width="20" height="20"><circle cx="12" cy="12" r="10" stroke="#22c55e" stroke-width="2"/><path d="M8 12l2.5 2.5L16 9" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
             }
             if (state.answers[state.currentQuestion] === choice && choice !== q.answer) {
                 classes += " wrong";
-                icon = ' <svg class="icon" viewBox="0 0 24 24" fill="none" width="20" height="20"><circle cx="12" cy="12" r="10" stroke="#ef4444" stroke-width="2"/><path d="M9 9l6 6M15 9l-6 6" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/></svg>';
             }
         } else if (state.answers[state.currentQuestion] === choice) {
             classes += " selected";
@@ -525,51 +447,21 @@ function renderQuestion() {
     }
     html += `</div></form>`;
 
-    // Bookmarked questions list (if any)
-    if (state.bookmarks[chapterKey].length > 0) {
-        html += `<div style="margin:18px 0 0 0; text-align:center;">
-            <span style="color:#fbbf24;font-weight:600;">Bookmarked: </span>
-            ${state.bookmarks[chapterKey].map(idx =>
-                `<button class="btn" style="width:auto;display:inline-block;padding:6px 16px;margin:2px 2px;font-size:0.95em;" onclick="gotoBookmarked(${idx})">#${idx+1}</button>`
-            ).join('')}
-        </div>`;
-    }
-
     app.innerHTML = html;
 
     document.getElementById('quizForm').onsubmit = function(e) {
         e.preventDefault();
     };
 
-    // Save answer on radio click and show feedback
     document.querySelectorAll('input[type=radio]').forEach(radio => {
         radio.onchange = function() {
             state.answers[state.currentQuestion] = this.value;
             state.showFeedback[state.currentQuestion] = true;
-            playSound(this.value === q.answer ? 'correct' : 'wrong');
             renderQuestion();
         };
     });
 }
 
-// --- Bookmarks ---
-function toggleBookmark(idx) {
-    const chapterKey = `${state.system}|${state.subject}|${state.chapter}`;
-    if (!state.bookmarks[chapterKey]) state.bookmarks[chapterKey] = [];
-    const i = state.bookmarks[chapterKey].indexOf(idx);
-    if (i === -1) {
-        state.bookmarks[chapterKey].push(idx);
-    } else {
-        state.bookmarks[chapterKey].splice(i, 1);
-    }
-    renderQuestion();
-}
-function gotoBookmarked(idx) {
-    state.currentQuestion = idx;
-    renderQuestion();
-}
-
-// --- Navigation logic ---
 function selectSystem(sys) {
     state.system = sys;
     state.subject = null;
@@ -597,7 +489,6 @@ function selectChapter(chap) {
     state.currentQuestion = 0;
     state.submitted = false;
     state.showFeedback = [];
-    // Randomize questions and choices
     const origQuestions = QUESTION_BANK[state.system][state.subject][state.chapter];
     state.randomizedQuestions = shuffleArray(origQuestions).map(q => ({
         ...q,
@@ -614,9 +505,7 @@ function resetState() {
         currentQuestion: 0,
         submitted: false,
         showFeedback: [],
-        randomizedQuestions: [],
-        bookmarks: state.bookmarks || {},
-        soundOn: state.soundOn
+        randomizedQuestions: []
     };
     renderSystems();
 }
@@ -638,7 +527,6 @@ function restartQuiz() {
     state.currentQuestion = 0;
     state.submitted = false;
     state.showFeedback = [];
-    // Re-randomize questions and choices
     const origQuestions = QUESTION_BANK[state.system][state.subject][state.chapter];
     state.randomizedQuestions = shuffleArray(origQuestions).map(q => ({
         ...q,
@@ -647,36 +535,6 @@ function restartQuiz() {
     renderQuestion();
 }
 
-// --- Sound ---
-function playSound(type) {
-    if (!state.soundOn) return;
-    let audio;
-    if (type === 'correct') {
-        audio = document.getElementById('audio-correct');
-    } else {
-        audio = document.getElementById('audio-wrong');
-    }
-    if (audio) {
-        audio.currentTime = 0;
-        audio.play();
-    }
-}
-
-// --- Telegram theme changes ---
-if (window.Telegram && Telegram.WebApp) {
-    Telegram.WebApp.onEvent('themeChanged', applyTelegramTheme);
-}
-
-// --- Prevent scrolling/touchmove ---
-window.addEventListener('touchmove', function(e) {
-    e.preventDefault();
-}, { passive: false });
-
-window.addEventListener('scroll', function(e) {
-    window.scrollTo(0, 0);
-});
-
-// --- Initial render ---
 renderSystems();
 </script>
 </body>
