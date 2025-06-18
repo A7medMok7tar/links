@@ -208,6 +208,16 @@ const QUESTION_BANK = {
                     "question": "How many bones are in the adult human body?",
                     "choices": ["206", "210", "201", "208"],
                     "answer": "206"
+                },
+                {
+                    "question": "Which bone forms the forehead?",
+                    "choices": ["Frontal bone", "Parietal bone", "Temporal bone", "Occipital bone"],
+                    "answer": "Frontal bone"
+                },
+                {
+                    "question": "Which bone is commonly known as the collarbone?",
+                    "choices": ["Clavicle", "Scapula", "Sternum", "Humerus"],
+                    "answer": "Clavicle"
                 }
             ],
             "Joints": [
@@ -215,6 +225,16 @@ const QUESTION_BANK = {
                     "question": "Which joint is a ball and socket joint?",
                     "choices": ["Knee", "Elbow", "Shoulder", "Ankle"],
                     "answer": "Shoulder"
+                },
+                {
+                    "question": "Which joint connects the femur and tibia?",
+                    "choices": ["Knee", "Hip", "Ankle", "Shoulder"],
+                    "answer": "Knee"
+                },
+                {
+                    "question": "Which joint allows rotation of the head?",
+                    "choices": ["Atlantoaxial joint", "Temporomandibular joint", "Sacroiliac joint", "Elbow joint"],
+                    "answer": "Atlantoaxial joint"
                 }
             ]
         },
@@ -224,6 +244,16 @@ const QUESTION_BANK = {
                     "question": "Which ion is essential for muscle contraction?",
                     "choices": ["Sodium", "Potassium", "Calcium", "Magnesium"],
                     "answer": "Calcium"
+                },
+                {
+                    "question": "What is the contractile unit of a muscle fiber?",
+                    "choices": ["Sarcomere", "Myofibril", "Actin", "Myosin"],
+                    "answer": "Sarcomere"
+                },
+                {
+                    "question": "Which molecule provides energy for muscle contraction?",
+                    "choices": ["ATP", "DNA", "RNA", "Glucose"],
+                    "answer": "ATP"
                 }
             ]
         }
@@ -235,6 +265,16 @@ const QUESTION_BANK = {
                     "question": "Which chamber of the heart pumps oxygenated blood to the body?",
                     "choices": ["Right Atrium", "Left Atrium", "Right Ventricle", "Left Ventricle"],
                     "answer": "Left Ventricle"
+                },
+                {
+                    "question": "Which valve is located between the left atrium and left ventricle?",
+                    "choices": ["Mitral valve", "Tricuspid valve", "Aortic valve", "Pulmonary valve"],
+                    "answer": "Mitral valve"
+                },
+                {
+                    "question": "What is the outermost layer of the heart wall?",
+                    "choices": ["Epicardium", "Myocardium", "Endocardium", "Pericardium"],
+                    "answer": "Epicardium"
                 }
             ]
         }
@@ -256,7 +296,6 @@ function applyTelegramTheme() {
         const theme = Telegram.WebApp.colorScheme || 'light';
         document.documentElement.setAttribute('data-theme', theme);
         Telegram.WebApp.expand();
-        Telegram.WebApp.showCloseButton();
     }
 }
 applyTelegramTheme();
