@@ -2,14 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>🎨 Button Builder</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>Button Builder</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -19,6 +20,10 @@
             padding: 16px;
             padding-bottom: 32px;
             min-height: 100vh;
+            touch-action: pan-x pan-y;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         h1 {
@@ -192,6 +197,8 @@
             background: var(--tg-theme-secondary-bg-color);
             color: var(--tg-theme-text-color);
             font-size: 15px;
+            -webkit-appearance: none;
+            appearance: none;
         }
 
         .color-buttons {
@@ -264,6 +271,30 @@
         .toast.error {
             background: var(--tg-theme-destructive-bg-color);
             color: var(--tg-theme-destructive-text-color);
+        }
+
+        /* Disable all hover effects for touch devices */
+        @media (hover: hover) {
+            .delete-row-btn:hover,
+            .edit-btn:hover,
+            .delete-btn:hover,
+            .add-btn:hover,
+            .add-row-btn:hover,
+            .color-option:hover,
+            .modal-buttons button:hover {
+                opacity: 1;
+            }
+        }
+
+        /* Remove any hover opacity changes */
+        .delete-row-btn,
+        .edit-btn,
+        .delete-btn,
+        .add-btn,
+        .add-row-btn,
+        .color-option,
+        .modal-buttons button {
+            transition: none;
         }
     </style>
 </head>
