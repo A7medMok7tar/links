@@ -665,4 +665,498 @@
         tg.MainButton.onClick(() => {
             hapticLight();
             if (validateAllButtons()) {
-          
+                sendToBot();
+            } else {
+                showToast("Fix validation errors before sending", true);
+                hapticWarning();
+            }
+        });
+        tg.MainButton.show();
+
+        // Back Button
+        tg.BackButton.onClick(() => {
+            hapticLight();
+            if (document.getElementById('modal').style.display === 'flex') {
+                closeModal();
+            } else if (document.getElementById('bottomSheet').classList.contains('open')) {
+                closeBottomSheet();
+            }
+        });
+
+        // Bottom Sheet functions
+        function openBottomSheet() {
+            hapticLight();
+            document.getElementById('bottomSheet').classList.add('open');
+            document.getElementById('overlay').classList.add('open');
+        }
+
+        function closeBottomSheet() {
+            document.getElementById('bottomSheet').classList.remove('open');
+            document.getElementById('overlay').classList.remove('open');
+        }
+
+        function selectType(type) {
+            hapticLight();
+            currentSelectedType = type;
+            updateTypeDisplay(type);
+            closeBottomSheet();
+            validateCurrentButton();
+        }
+
+        function updateTypeDisplay(type) {
+            let displaySpan = document.getElementById('selected-type-display');
+            if (displaySpan) {
+                displaySpan.innerHTML = `<span>${typeIcons[type]}</span> ${typeNames[type]}`;
+            }
+        }
+
+        // ============ DRAG & DROP ============
+        let draggedRowIndex = null;
+        let draggedButton = null;
+        let draggedButtonRowIndex = null;
+        let draggedButtonIndex = null;
+
+        function handleRowDragStart(e, rowIndex) {
+            draggedRowIndex = rowIndex;
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleRowDragEnd(e) {
+            e.target.classList.remove('dragging');
+            draggedRowIndex = null;
+        }
+
+        function handleRowDragOver(e, targetIndex) {
+            e.preventDefault();
+            if (draggedRowIndex === null) return;
+            if (draggedRowIndex === targetIndex) return;
+            
+            let rows = document.querySelectorAll('.row');
+            rows.forEach(row => row.classList.remove('drag-over'));
+            e.target.closest('.row').classList.add('drag-over');
+        }
+
+        function handleRowDrop(e, targetIndex) {
+            e.preventDefault();
+            if (draggedRowIndex === null) return;
+            if (draggedRowIndex === targetIndex) return;
+            
+            let rowsData = [...rows];
+            let draggedItem = rowsData[draggedRowIndex];
+            rowsData.splice(draggedRowIndex, 1);
+            rowsData.splice(targetIndex, 0, draggedItem);
+            rows = rowsData;
+            
+            render();
+            showToast("Row moved");
+            
+            document.querySelectorAll('.row').forEach(row => row.classList.remove('drag-over'));
+            draggedRowIndex = null;
+        }
+
+        function handleButtonDragStart(e, rowIndex, btnIndex) {
+            draggedButton = rows[rowIndex][btnIndex];
+            draggedButtonRowIndex = rowIndex;
+            draggedButtonIndex = btnIndex;
+            e.target.closest('.button-card').classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleButtonDragEnd(e) {
+            if (e.target.closest('.button-card')) {
+                e.target.closest('.button-card').classList.remove('dragging');
+            }
+            draggedButton = null;
+            draggedButtonRowIndex = null;
+            draggedButtonIndex = null;
+        }
+
+        function handleButtonDragOver(e, targetRowIndex, targetBtnIndex) {
+            e.preventDefault();
+            if (draggedButton === null) return;
+        }
+
+        function handleButtonDrop(e, targetRowIndex, targetBtnIndex) {
+            e.preventDefault();
+            if (draggedButton === null) return;
+            
+            let newRows = [...rows];
+            
+            newRows[draggedButtonRowIndex].splice(draggedButtonIndex, 1);
+            
+            let adjustedTargetIndex = targetBtnIndex;
+            if (draggedButtonRowIndex === targetRowIndex && draggedButtonIndex < targetBtnIndex) {
+                adjustedTargetIndex--;
+            }
+            
+            newRows[targetRowIndex].splice(adjustedTargetIndex, 0, draggedButton);
+            newRows = newRows.filter(row => row.length > 0);
+            
+            rows = newRows;
+            render();
+            showToast("Button moved");
+            
+            draggedButton = null;
+            draggedButtonRowIndex = null;
+            draggedButtonIndex = null;
+        }
+
+        // ============ VALIDATION ============
+        function validateButton(button) {
+            let errors = [];
+            
+            if (!button.label || button.label.trim() === '') {
+                errors.push('Label is required');
+            } else if (button.label.length > 50) {
+                errors.push('Label is too long (max 50 characters)');
+            }
+            
+            if (!button.value || button.value.trim() === '') {
+                errors.push(`${button.type} value is required');
+            } else if (button.type === 'url' || button.type === 'webapp') {
+                let urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+                if (!urlPattern.test(button.value)) {
+                    errors.push('Invalid URL format');
+                }
+            } else if (button.type === 'share' || button.type === 'copy' || button.type === 'popup' || button.type === 'silent') {
+                if (button.value.length > 200) {
+                    errors.push('Text is too long (max 200 characters)');
+                }
+            }
+            
+            return errors;
+        }
+
+        function validateAllButtons() {
+            let hasErrors = false;
+            let totalErrors = 0;
+            
+            for (let i = 0; i < rows.length; i++) {
+                for (let j = 0; j < rows[i].length; j++) {
+                    let errors = validateButton(rows[i][j]);
+                    if (errors.length > 0) {
+                        hasErrors = true;
+                        totalErrors += errors.length;
+                    }
+                }
+            }
+            
+            let summaryDiv = document.getElementById('validation-summary');
+            if (hasErrors) {
+                summaryDiv.style.display = 'block';
+                summaryDiv.className = 'validation-summary error';
+                summaryDiv.innerHTML = `⚠️ ${totalErrors} validation issue${totalErrors > 1 ? 's' : ''} found. Fix before sending.`;
+            } else {
+                summaryDiv.style.display = 'none';
+            }
+            
+            return !hasErrors;
+        }
+
+        function validateCurrentButton() {
+            let label = document.getElementById('btn-label').value;
+            let type = currentSelectedType;
+            let value = document.getElementById('btn-value').value;
+            
+            let labelDiv = document.getElementById('label-validation');
+            let valueDiv = document.getElementById('value-validation');
+            
+            let hasError = false;
+            
+            if (!label || label.trim() === '') {
+                labelDiv.textContent = '❌ Label is required';
+                labelDiv.classList.add('show');
+                hasError = true;
+            } else if (label.length > 50) {
+                labelDiv.textContent = '❌ Label too long (max 50)';
+                labelDiv.classList.add('show');
+                hasError = true;
+            } else {
+                labelDiv.classList.remove('show');
+            }
+            
+            if (!value || value.trim() === '') {
+                valueDiv.textContent = `❌ ${typeNames[type]} value is required`;
+                valueDiv.classList.add('show');
+                hasError = true;
+            } else if ((type === 'url' || type === 'webapp') && value) {
+                let urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+                if (!urlPattern.test(value)) {
+                    valueDiv.textContent = '❌ Invalid URL format (e.g., https://example.com)';
+                    valueDiv.classList.add('show');
+                    hasError = true;
+                } else {
+                    valueDiv.classList.remove('show');
+                }
+            } else {
+                valueDiv.classList.remove('show');
+            }
+            
+            return !hasError;
+        }
+
+        // ============ APP STATE ============
+        let rows = [];
+        let editRowIndex = null;
+        let editBtnIndex = null;
+        let currentSelectedType = 'url';
+
+        async function saveToStorage() {
+            await saveToCloud();
+            localStorage.setItem('button_rows', JSON.stringify(rows));
+        }
+
+        async function loadFromStorage() {
+            let saved = await loadFromCloud();
+            if (!saved || saved.length === 0) {
+                saved = localStorage.getItem('button_rows');
+                if (saved) saved = JSON.parse(saved);
+            }
+            if (saved && saved.length > 0) {
+                rows = saved;
+            } else {
+                rows = [
+                    [{ label: "Subscribe", type: "url", value: "https://t.me/yourchannel", color: "primary" }],
+                    [{ label: "Share", type: "share", value: "Check out this channel!", color: "success" }]
+                ];
+            }
+            render();
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            let div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function getTypeLabel(type) {
+            return typeNames[type] || type;
+        }
+
+        function render() {
+            let container = document.getElementById('rows-container');
+            if (!container) return;
+            
+            if (rows.length === 0) {
+                container.innerHTML = '<div class="empty-state">No buttons yet<br>Click "Add Row" to start</div>';
+                document.getElementById('validation-summary').style.display = 'none';
+                return;
+            }
+
+            container.innerHTML = '';
+            
+            for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+                let row = rows[rowIndex];
+                let rowDiv = document.createElement('div');
+                rowDiv.className = 'row';
+                rowDiv.draggable = true;
+                rowDiv.setAttribute('draggable', 'true');
+                rowDiv.ondragstart = (e) => handleRowDragStart(e, rowIndex);
+                rowDiv.ondragend = (e) => handleRowDragEnd(e);
+                rowDiv.ondragover = (e) => handleRowDragOver(e, rowIndex);
+                rowDiv.ondrop = (e) => handleRowDrop(e, rowIndex);
+                
+                rowDiv.innerHTML = `
+                    <div class="row-header">
+                        <div class="row-header-left">
+                            <span class="drag-handle">⋮⋮</span>
+                            <span class="row-title">Row ${rowIndex + 1}</span>
+                        </div>
+                        <button class="delete-row-btn" onclick="deleteRow(${rowIndex})">Delete Row</button>
+                    </div>
+                    <div class="buttons-container" id="buttons-container-${rowIndex}"></div>
+                    <button class="add-btn" onclick="addButton(${rowIndex})">Add Button to Row ${rowIndex + 1}</button>
+                `;
+                
+                let buttonsContainer = rowDiv.querySelector(`#buttons-container-${rowIndex}`);
+                
+                for (let btnIndex = 0; btnIndex < row.length; btnIndex++) {
+                    let button = row[btnIndex];
+                    let errors = validateButton(button);
+                    let hasError = errors.length > 0;
+                    
+                    let btnCard = document.createElement('div');
+                    btnCard.className = 'button-card' + (hasError ? ' has-error' : '');
+                    btnCard.draggable = true;
+                    btnCard.ondragstart = (e) => handleButtonDragStart(e, rowIndex, btnIndex);
+                    btnCard.ondragend = (e) => handleButtonDragEnd(e);
+                    btnCard.ondragover = (e) => handleButtonDragOver(e, rowIndex, btnIndex);
+                    btnCard.ondrop = (e) => handleButtonDrop(e, rowIndex, btnIndex);
+                    btnCard.onclick = (function(r, b) {
+                        return function() { openModal(r, b); };
+                    })(rowIndex, btnIndex);
+                    
+                    btnCard.innerHTML = `
+                        ${hasError ? '<div class="error-marker">!</div>' : ''}
+                        <div class="button-label">${escapeHtml(button.label)}</div>
+                        <div class="button-type">${getTypeLabel(button.type)}</div>
+                        <div class="button-value">${escapeHtml(button.value.substring(0, 40))}${button.value.length > 40 ? '...' : ''}</div>
+                        <div class="button-actions">
+                            <button class="edit-btn" onclick="event.stopPropagation(); openModal(${rowIndex}, ${btnIndex})">Edit</button>
+                            <button class="duplicate-btn" onclick="event.stopPropagation(); duplicateButton(${rowIndex}, ${btnIndex})">Copy</button>
+                            <button class="delete-btn" onclick="event.stopPropagation(); deleteButton(${rowIndex}, ${btnIndex})">Delete</button>
+                        </div>
+                    `;
+                    
+                    buttonsContainer.appendChild(btnCard);
+                }
+                container.appendChild(rowDiv);
+            }
+            
+            validateAllButtons();
+            saveToStorage();
+        }
+
+        function duplicateButton(rowIndex, btnIndex) {
+            hapticLight();
+            let button = JSON.parse(JSON.stringify(rows[rowIndex][btnIndex]));
+            button.label = button.label + " (Copy)";
+            rows[rowIndex].splice(btnIndex + 1, 0, button);
+            render();
+            showToast("Button duplicated");
+        }
+
+        function addRow() {
+            hapticLight();
+            rows.push([]);
+            render();
+            showToast("Row added");
+        }
+
+        function deleteRow(rowIndex) {
+            hapticLight();
+            tg.showConfirm(`Delete Row ${rowIndex + 1}?`, (confirmed) => {
+                if (confirmed) {
+                    rows.splice(rowIndex, 1);
+                    render();
+                    showToast("Row deleted");
+                }
+            });
+        }
+
+        function addButton(rowIndex) {
+            hapticLight();
+            rows[rowIndex].push({
+                label: "New Button",
+                type: "url",
+                value: "https://",
+                color: "primary"
+            });
+            render();
+            showToast("Button added");
+        }
+
+        function deleteButton(rowIndex, btnIndex) {
+            hapticLight();
+            tg.showConfirm(`Delete this button?`, (confirmed) => {
+                if (confirmed) {
+                    rows[rowIndex].splice(btnIndex, 1);
+                    if (rows[rowIndex].length === 0) {
+                        rows.splice(rowIndex, 1);
+                    }
+                    render();
+                    showToast("Button deleted");
+                }
+            });
+        }
+
+        function openModal(rowIndex, btnIndex) {
+            hapticLight();
+            editRowIndex = rowIndex;
+            editBtnIndex = btnIndex;
+            let button = rows[rowIndex][btnIndex];
+            currentSelectedType = button.type;
+            
+            tg.BackButton.show();
+            
+            document.getElementById('btn-label').value = button.label || '';
+            document.getElementById('btn-value').value = button.value || '';
+            updateTypeDisplay(button.type);
+            
+            document.getElementById('modal').style.display = 'flex';
+            validateCurrentButton();
+        }
+
+        function setColor(color) {
+            hapticLight();
+            if (editRowIndex !== null && editBtnIndex !== null) {
+                rows[editRowIndex][editBtnIndex].color = color;
+                render();
+            }
+        }
+
+        function saveButton() {
+            if (validateCurrentButton()) {
+                if (editRowIndex !== null && editBtnIndex !== null) {
+                    let button = rows[editRowIndex][editBtnIndex];
+                    button.label = document.getElementById('btn-label').value || "Button";
+                    button.type = currentSelectedType;
+                    button.value = document.getElementById('btn-value').value || "";
+                    render();
+                    showToast("Button saved");
+                    hapticSuccess();
+                }
+                closeModal();
+            } else {
+                hapticWarning();
+                showToast("Please fix validation errors", true);
+            }
+        }
+
+        function closeModal(event) {
+            document.getElementById('modal').style.display = 'none';
+            editRowIndex = null;
+            editBtnIndex = null;
+            currentSelectedType = 'url';
+            tg.BackButton.hide();
+        }
+
+        function stopPropagation(event) {
+            if (event) event.stopPropagation();
+        }
+
+        function sendToBot() {
+            if (rows.length === 0) {
+                tg.showAlert("Please add at least one button!");
+                return;
+            }
+            
+            if (!validateAllButtons()) {
+                tg.showAlert("Please fix validation errors before sending");
+                return;
+            }
+            
+            tg.MainButton.showProgress(false);
+            
+            let buttonsText = [];
+            for (let i = 0; i < rows.length; i++) {
+                let rowButtons = [];
+                for (let j = 0; j < rows[i].length; j++) {
+                    let btn = rows[i][j];
+                    let btnText = `${btn.label} | ${btn.type} | ${btn.value}`;
+                    if (btn.color && btn.color !== '') {
+                        btnText += ` | ${btn.color}`;
+                    }
+                    rowButtons.push(btnText);
+                }
+                buttonsText.push(rowButtons.join(' + '));
+            }
+            
+            try {
+                tg.sendData(buttonsText.join('\n'));
+                showToast("Sent to bot!");
+                setTimeout(() => tg.close(), 500);
+            } catch(e) {
+                tg.MainButton.hideProgress();
+                tg.showAlert("Error: " + e.message);
+                showToast("Error sending", true);
+            }
+        }
+
+        loadFromStorage();
+        setTimeout(() => showToast("Button Builder ready"), 500);
+    </script>
+</body>
+</html>
