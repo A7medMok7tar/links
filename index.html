@@ -37,6 +37,7 @@
             font-size: 14px;
         }
 
+        /* Row styles */
         .row {
             background: var(--tg-theme-secondary-bg-color);
             border-radius: 14px;
@@ -233,124 +234,52 @@
             border-left: 3px solid var(--tg-theme-destructive-bg-color);
         }
 
-        .type-selector-btn {
+        /* ============ HORIZONTAL CHIPS ============ */
+        .chips-container {
+            margin: 12px 0;
+        }
+
+        .chips-label {
+            font-size: 13px;
+            color: var(--tg-theme-hint-color);
+            margin-bottom: 8px;
+        }
+
+        .chips-scroll {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 4px 0 8px 0;
+            scrollbar-width: thin;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .chip {
             background: var(--tg-theme-secondary-bg-color);
             border: 0.5px solid var(--tg-theme-hint-color);
-            border-radius: 10px;
-            padding: 12px;
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            margin: 8px 0;
-            color: var(--tg-theme-text-color);
-            font-size: 15px;
-        }
-
-        .type-selector-btn span:first-child {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .bottom-sheet {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--tg-theme-bg-color);
-            border-radius: 20px 20px 0 0;
-            transform: translateY(100%);
-            transition: transform 0.3s ease;
-            z-index: 1000;
-            max-height: 80vh;
-            overflow-y: auto;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-        }
-
-        .bottom-sheet.open {
-            transform: translateY(0);
-        }
-
-        .bottom-sheet-header {
-            padding: 16px;
-            border-bottom: 0.5px solid var(--tg-theme-hint-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            background: var(--tg-theme-bg-color);
-        }
-
-        .bottom-sheet-header h3 {
-            font-size: 17px;
-            font-weight: 600;
-        }
-
-        .close-sheet {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: var(--tg-theme-hint-color);
-        }
-
-        .type-option {
-            display: flex;
-            align-items: center;
-            padding: 14px 16px;
-            border-bottom: 0.5px solid var(--tg-theme-hint-color);
-            cursor: pointer;
-        }
-
-        .type-option:active {
-            background: var(--tg-theme-secondary-bg-color);
-        }
-
-        .type-icon {
-            font-size: 28px;
-            width: 48px;
-            text-align: center;
-        }
-
-        .type-info {
-            flex: 1;
-        }
-
-        .type-name {
+            border-radius: 30px;
+            padding: 8px 16px;
+            font-size: 14px;
             font-weight: 500;
-            font-size: 16px;
-            margin-bottom: 2px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .type-description {
-            font-size: 12px;
-            color: var(--tg-theme-hint-color);
+        .chip:active {
+            transform: scale(0.96);
         }
 
-        .type-example {
-            font-size: 11px;
-            color: var(--tg-theme-button-color);
-            margin-top: 2px;
+        .chip.active {
+            background: var(--tg-theme-button-color);
+            border-color: transparent;
+            color: var(--tg-theme-button-text-color);
         }
 
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 999;
-            display: none;
-        }
-
-        .overlay.open {
-            display: block;
-        }
-
+        /* Modal styles */
         .modal {
             display: none;
             position: fixed;
@@ -369,7 +298,7 @@
             border-radius: 14px;
             padding: 20px;
             width: 90%;
-            max-width: 320px;
+            max-width: 340px;
         }
 
         .modal-content h3 {
@@ -416,6 +345,7 @@
             border-radius: 8px;
             cursor: pointer;
             font-size: 12px;
+            font-weight: 500;
         }
 
         .color-option.primary { background: #3390ec; color: white; }
@@ -436,6 +366,7 @@
             border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: 500;
         }
 
         .empty-state {
@@ -488,76 +419,37 @@
 
     <div class="info-text">Tap any button to edit • Drag ⋮⋮ to reorder rows • Drag buttons to reorder</div>
 
-    <div id="overlay" class="overlay" onclick="closeBottomSheet()"></div>
-
-    <div id="bottomSheet" class="bottom-sheet">
-        <div class="bottom-sheet-header">
-            <h3>Select Button Type</h3>
-            <button class="close-sheet" onclick="closeBottomSheet()">✕</button>
-        </div>
-        <div id="type-options">
-            <div class="type-option" onclick="selectType('url')">
-                <div class="type-icon">🔗</div>
-                <div class="type-info">
-                    <div class="type-name">URL</div>
-                    <div class="type-description">Opens a website when clicked</div>
-                    <div class="type-example">https://t.me/channel</div>
-                </div>
-            </div>
-            <div class="type-option" onclick="selectType('popup')">
-                <div class="type-icon">⚠️</div>
-                <div class="type-info">
-                    <div class="type-name">Popup</div>
-                    <div class="type-description">Shows an alert with OK button</div>
-                    <div class="type-example">Welcome to our channel!</div>
-                </div>
-            </div>
-            <div class="type-option" onclick="selectType('silent')">
-                <div class="type-icon">🔔</div>
-                <div class="type-info">
-                    <div class="type-name">Silent</div>
-                    <div class="type-description">Brief notification (auto-dismiss)</div>
-                    <div class="type-example">Action completed</div>
-                </div>
-            </div>
-            <div class="type-option" onclick="selectType('share')">
-                <div class="type-icon">📤</div>
-                <div class="type-info">
-                    <div class="type-name">Share</div>
-                    <div class="type-description">Share text to any chat</div>
-                    <div class="type-example">Check out this channel!</div>
-                </div>
-            </div>
-            <div class="type-option" onclick="selectType('copy')">
-                <div class="type-icon">📋</div>
-                <div class="type-info">
-                    <div class="type-name">Copy</div>
-                    <div class="type-description">Copies text to clipboard</div>
-                    <div class="type-example">PROMO2024</div>
-                </div>
-            </div>
-            <div class="type-option" onclick="selectType('webapp')">
-                <div class="type-icon">🖥️</div>
-                <div class="type-info">
-                    <div class="type-name">WebApp</div>
-                    <div class="type-description">Opens a web application</div>
-                    <div class="type-example">https://example.com/app</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    <!-- Modal for editing button -->
     <div id="modal" class="modal" onclick="closeModal(event)">
         <div class="modal-content" onclick="stopPropagation(event)">
             <h3>Edit Button</h3>
+            
             <input type="text" id="btn-label" placeholder="Button label" oninput="validateCurrentButton()">
             <div id="label-validation" class="validation-message"></div>
             
-            <div class="type-selector-btn" onclick="openBottomSheet()">
-                <span id="selected-type-display">
-                    <span>🔗</span> URL
-                </span>
-                <span>▼</span>
+            <!-- Horizontal Chips for Type Selection -->
+            <div class="chips-container">
+                <div class="chips-label">Button Type</div>
+                <div class="chips-scroll" id="chips-scroll">
+                    <div class="chip active" data-type="url" onclick="selectChip('url')">
+                        <span>🔗</span> URL
+                    </div>
+                    <div class="chip" data-type="popup" onclick="selectChip('popup')">
+                        <span>⚠️</span> Popup
+                    </div>
+                    <div class="chip" data-type="silent" onclick="selectChip('silent')">
+                        <span>🔔</span> Silent
+                    </div>
+                    <div class="chip" data-type="share" onclick="selectChip('share')">
+                        <span>📤</span> Share
+                    </div>
+                    <div class="chip" data-type="copy" onclick="selectChip('copy')">
+                        <span>📋</span> Copy
+                    </div>
+                    <div class="chip" data-type="webapp" onclick="selectChip('webapp')">
+                        <span>🖥️</span> WebApp
+                    </div>
+                </div>
             </div>
             
             <input type="text" id="btn-value" placeholder="Value (URL, text, etc.)" oninput="validateCurrentButton()">
@@ -569,6 +461,7 @@
                 <button class="color-option danger" onclick="setColor('danger')">Danger</button>
                 <button class="color-option none" onclick="setColor('')">Default</button>
             </div>
+            
             <div class="modal-buttons">
                 <button onclick="saveButton()">Save</button>
                 <button onclick="closeModal()">Cancel</button>
@@ -582,6 +475,7 @@
         tg.enableClosingConfirmation();
         tg.ready();
 
+        // Type configuration
         const typeIcons = {
             'url': '🔗',
             'popup': '⚠️',
@@ -600,6 +494,9 @@
             'webapp': 'WebApp'
         };
 
+        let currentType = 'url';
+
+        // Haptic feedback
         function hapticLight() {
             tg.HapticFeedback.impactOccurred('light');
         }
@@ -612,6 +509,7 @@
             tg.HapticFeedback.notificationOccurred('warning');
         }
 
+        // Toast notification
         function showToast(message, isError = false) {
             let toast = document.createElement('div');
             toast.className = 'toast' + (isError ? ' error' : '');
@@ -625,6 +523,7 @@
             }
         }
 
+        // Cloud storage
         async function saveToCloud() {
             try {
                 await tg.CloudStorage.setItem('button_rows', JSON.stringify(rows));
@@ -642,6 +541,7 @@
             return null;
         }
 
+        // Main Button
         tg.MainButton.setText("Send to Bot");
         tg.MainButton.onClick(() => {
             hapticLight();
@@ -654,40 +554,31 @@
         });
         tg.MainButton.show();
 
+        // Back Button
         tg.BackButton.onClick(() => {
             hapticLight();
             if (document.getElementById('modal').style.display === 'flex') {
                 closeModal();
-            } else if (document.getElementById('bottomSheet').classList.contains('open')) {
-                closeBottomSheet();
             }
         });
 
-        function openBottomSheet() {
+        // Chip selection
+        function selectChip(type) {
             hapticLight();
-            document.getElementById('bottomSheet').classList.add('open');
-            document.getElementById('overlay').classList.add('open');
+            currentType = type;
+            
+            // Update active state on chips
+            document.querySelectorAll('.chip').forEach(chip => {
+                chip.classList.remove('active');
+                if (chip.getAttribute('data-type') === type) {
+                    chip.classList.add('active');
+                }
+            });
+            
+            validateCurrentButton();
         }
 
-        function closeBottomSheet() {
-            document.getElementById('bottomSheet').classList.remove('open');
-            document.getElementById('overlay').classList.remove('open');
-        }
-
-        function selectType(type) {
-            hapticLight();
-            updateTypeDisplay(type);
-            closeBottomSheet();
-            setTimeout(() => validateCurrentButton(), 50);
-        }
-
-        function updateTypeDisplay(type) {
-            let displaySpan = document.getElementById('selected-type-display');
-            if (displaySpan) {
-                displaySpan.innerHTML = `<span>${typeIcons[type]}</span> ${typeNames[type]}`;
-            }
-        }
-
+        // Drag & Drop functions
         let draggedRowIndex = null;
         let draggedButton = null;
         let draggedButtonRowIndex = null;
@@ -779,6 +670,7 @@
             draggedButtonIndex = null;
         }
 
+        // Validation functions
         function validateButton(button) {
             let errors = [];
             
@@ -790,7 +682,7 @@
             
             if (!button.value || button.value.trim() === '') {
                 errors.push(`${button.type} value is required`);
-            } else if ((button.type === 'url' || button.type === 'webapp') && button.value) {
+            } else if ((button.type === 'url' || button.type === 'webapp')) {
                 let urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
                 if (!urlPattern.test(button.value)) {
                     errors.push('Invalid URL format');
@@ -833,18 +725,6 @@
         function validateCurrentButton() {
             let label = document.getElementById('btn-label').value;
             let value = document.getElementById('btn-value').value;
-            let displaySpan = document.getElementById('selected-type-display');
-            let currentType = 'url';
-            
-            if (displaySpan) {
-                let text = displaySpan.innerText;
-                for (let [type, name] of Object.entries(typeNames)) {
-                    if (text.includes(name)) {
-                        currentType = type;
-                        break;
-                    }
-                }
-            }
             
             let labelDiv = document.getElementById('label-validation');
             let valueDiv = document.getElementById('value-validation');
@@ -870,7 +750,7 @@
             } else if ((currentType === 'url' || currentType === 'webapp')) {
                 let urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
                 if (!urlPattern.test(value)) {
-                    valueDiv.textContent = '❌ Invalid URL format';
+                    valueDiv.textContent = '❌ Invalid URL format (e.g., https://example.com)';
                     valueDiv.classList.add('show');
                     hasError = true;
                 } else {
@@ -883,6 +763,7 @@
             return !hasError;
         }
 
+        // Main app state
         let rows = [];
         let editRowIndex = null;
         let editBtnIndex = null;
@@ -1067,12 +948,20 @@
             editRowIndex = rowIndex;
             editBtnIndex = btnIndex;
             let button = rows[rowIndex][btnIndex];
+            currentType = button.type;
             
             tg.BackButton.show();
             
             document.getElementById('btn-label').value = button.label || '';
             document.getElementById('btn-value').value = button.value || '';
-            updateTypeDisplay(button.type);
+            
+            // Update active chip
+            document.querySelectorAll('.chip').forEach(chip => {
+                chip.classList.remove('active');
+                if (chip.getAttribute('data-type') === button.type) {
+                    chip.classList.add('active');
+                }
+            });
             
             document.getElementById('modal').style.display = 'flex';
             setTimeout(() => validateCurrentButton(), 50);
@@ -1091,18 +980,7 @@
                 if (editRowIndex !== null && editBtnIndex !== null) {
                     let button = rows[editRowIndex][editBtnIndex];
                     button.label = document.getElementById('btn-label').value || "Button";
-                    
-                    let displaySpan = document.getElementById('selected-type-display');
-                    if (displaySpan) {
-                        let text = displaySpan.innerText;
-                        for (let [type, name] of Object.entries(typeNames)) {
-                            if (text.includes(name)) {
-                                button.type = type;
-                                break;
-                            }
-                        }
-                    }
-                    
+                    button.type = currentType;
                     button.value = document.getElementById('btn-value').value || "";
                     render();
                     showToast("Button saved");
@@ -1119,6 +997,7 @@
             document.getElementById('modal').style.display = 'none';
             editRowIndex = null;
             editBtnIndex = null;
+            currentType = 'url';
             tg.BackButton.hide();
         }
 
