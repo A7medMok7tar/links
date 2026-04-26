@@ -1,305 +1,582 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <meta name="format-detection" content="telephone=no" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="MobileOptimized" content="176" />
-  <meta name="HandheldFriendly" content="True" />
-  <meta name="robots" content="noindex,nofollow" />
-  <script src="https://telegram.org/js/telegram-web-app.js?2"></script>
-  <script>
-      function setThemeClass() {
-          document.documentElement.className = Telegram.WebApp.colorScheme;
-      }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>🎨 Button Builder</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-      Telegram.WebApp.onEvent('themeChanged', setThemeClass);
-      setThemeClass();
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--tg-theme-bg-color);
+            color: var(--tg-theme-text-color);
+            padding: 16px;
+            padding-bottom: 32px;
+            min-height: 100vh;
+        }
 
-  </script>
-  <title>Social Media Links</title>
+        h1 {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+        .subtitle {
+            margin-bottom: 20px;
+            color: var(--tg-theme-hint-color);
+            font-size: 14px;
+        }
 
-  <style>
-    :root {
-      --text-color: var(--tg-theme-text-color, #ffffff);
-      --button-text-color: var(--tg-theme-button-text-color, #ffffff);
-      --gradient1: #ff6ec4;
-      --gradient2: #7873f5;
-      --gradient3: #1dd1a1;
-      --gradient4: #ff9ff3;
-    }
+        .row {
+            background: var(--tg-theme-secondary-bg-color);
+            border-radius: 14px;
+            margin-bottom: 16px;
+            padding: 12px;
+        }
 
-    body {
-      font-family: Arial, sans-serif;
-      color: var(--text-color);
-      margin: 0;
-      padding: 2rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      min-height: 100vh;
-      background: linear-gradient(-45deg, var(--gradient1), var(--gradient2), var(--gradient3), var(--gradient4));
-      background-size: cover;
-    }
+        .row-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 0.5px solid var(--tg-theme-hint-color);
+        }
 
-    .logo-wrapper {
-      width: 180px;
-      height: 180px;
-      border-radius: 50%;
-      background: #ffffff22;
-      padding: 6px;
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 1.5rem;
-    }
+        .row-title {
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--tg-theme-hint-color);
+        }
 
-    .logo-wrapper img {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 4px solid #ffffff;
-      animation: glowPulse 3s ease-in-out infinite;
-    }
+        .delete-row-btn {
+            background: transparent;
+            color: var(--tg-theme-destructive-text-color);
+            border: none;
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 13px;
+            cursor: pointer;
+        }
 
-    @keyframes glowPulse {
-      0% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.3); transform: scale(1); }
-      50% { box-shadow: 0 0 25px rgba(255, 255, 255, 0.6); transform: scale(1.05); }
-      100% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.3); transform: scale(1); }
-    }
+        .buttons-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+            min-height: 60px;
+        }
 
-    h1 {
-      margin-bottom: 2rem;
-      text-align: center;
-      font-size: 2rem;
-      letter-spacing: 1px;
-    }
+        .button-card {
+            background: var(--tg-theme-bg-color);
+            border-radius: 10px;
+            padding: 10px;
+            min-width: 130px;
+            cursor: pointer;
+            border: 0.5px solid var(--tg-theme-hint-color);
+        }
 
-    .social-buttons {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      width: 100%;
-      max-width: 400px;
-    }
+        .button-label {
+            font-weight: 500;
+            font-size: 14px;
+            margin-bottom: 4px;
+            word-break: break-word;
+        }
 
-    .social-button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.75rem;
-      padding: 1rem;
-      border: none;
-      border-radius: 12px;
-      font-size: 1.1rem;
-      font-weight: bold;
-      cursor: pointer;
-      color: var(--button-text-color);
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
-    }
+        .button-type {
+            font-size: 11px;
+            color: var(--tg-theme-hint-color);
+            margin-bottom: 4px;
+        }
 
-    .social-button:hover {
-      transform: scale(1.07);
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
-    }
+        .button-value {
+            font-size: 10px;
+            color: var(--tg-theme-hint-color);
+            word-break: break-all;
+        }
 
-    .faq-section {
-      margin-top: 3rem;
-      width: 100%;
-      max-width: 600px;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 1rem;
-      border-radius: 16px;
-      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(10px);
-      font-family: 'Tajawal', sans-serif;
-      direction: rtl;
-      text-align: right;
-    }
+        .button-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+        }
 
-    .faq-title {
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-      text-align: center;
-    }
+        .edit-btn, .delete-btn {
+            border: none;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 11px;
+            cursor: pointer;
+            flex: 1;
+        }
 
-    .faq-item {
-      margin-bottom: 1rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    }
+        .edit-btn {
+            background: var(--tg-theme-button-color);
+            color: var(--tg-theme-button-text-color);
+        }
 
-    .faq-question {
-      font-weight: bold;
-      cursor: pointer;
-      padding: 0.75rem 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+        .delete-btn {
+            background: var(--tg-theme-destructive-bg-color);
+            color: var(--tg-theme-destructive-text-color);
+        }
 
-    .faq-answer {
-      display: none;
-      padding-bottom: 0.75rem;
-      color: #ddd;
-    }
+        .add-btn {
+            background: var(--tg-theme-button-color);
+            color: var(--tg-theme-button-text-color);
+            border: none;
+            border-radius: 10px;
+            padding: 10px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 8px;
+        }
 
-    .faq-item.open .faq-answer {
-      display: block;
-    }
+        .add-row-btn {
+            background: transparent;
+            border: 1px solid var(--tg-theme-button-color);
+            color: var(--tg-theme-button-color);
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 14px;
+            cursor: pointer;
+            width: 100%;
+            margin: 8px 0 16px;
+        }
 
-    .faq-item.open .faq-question i {
-      transform: rotate(180deg);
-    }
+        .info-text {
+            font-size: 12px;
+            color: var(--tg-theme-hint-color);
+            text-align: center;
+            margin-top: 16px;
+        }
 
-    .faq-question i {
-      transition: transform 0.3s ease;
-    }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
 
-    @keyframes pulseIcon {
-      0% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(0, 136, 204, 0.7);
-      }
-      70% {
-        transform: scale(1.1);
-        box-shadow: 0 0 0 12px rgba(0, 136, 204, 0);
-      }
-      100% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(0, 136, 204, 0);
-      }
-    }
+        .modal-content {
+            background: var(--tg-theme-bg-color);
+            border-radius: 14px;
+            padding: 20px;
+            width: 90%;
+            max-width: 320px;
+        }
 
-    .chat-icon {
-      position: fixed;
-      bottom: 20px;
-      left: 20px;
-      width: 56px;
-      height: 56px;
-      background: #0088cc;
-      color: white;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      cursor: pointer;
-      z-index: 999;
-      font-size: 24px;
-      transition: background 0.3s;
-      animation: pulseIcon 2.5s infinite;
-    }
-  </style>
+        .modal-content h3 {
+            margin-bottom: 16px;
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .modal-content input, .modal-content select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 10px;
+            border: 0.5px solid var(--tg-theme-hint-color);
+            background: var(--tg-theme-secondary-bg-color);
+            color: var(--tg-theme-text-color);
+            font-size: 15px;
+        }
+
+        .color-buttons {
+            display: flex;
+            gap: 8px;
+            margin: 12px 0;
+        }
+
+        .color-option {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .color-option.primary { background: #3390ec; color: white; }
+        .color-option.success { background: #00b93e; color: white; }
+        .color-option.danger { background: #e53935; color: white; }
+        .color-option.none { background: var(--tg-theme-button-color); color: var(--tg-theme-button-text-color); }
+
+        .modal-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--tg-theme-hint-color);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            right: 20px;
+            background: var(--tg-theme-button-color);
+            color: var(--tg-theme-button-text-color);
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 14px;
+            z-index: 200;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .toast.error {
+            background: var(--tg-theme-destructive-bg-color);
+            color: var(--tg-theme-destructive-text-color);
+        }
+    </style>
 </head>
 <body>
+    <h1>Button Builder</h1>
+    <div class="subtitle">Create buttons for your post</div>
 
-  <div class="logo-wrapper">
-    <img src="logo.png" alt="Logo" />
-  </div>
+    <div id="rows-container"></div>
 
-  <h1>Follow Us</h1>
+    <button class="add-row-btn" onclick="addRow()">Add Row</button>
 
-  <div class="social-buttons">
-    <button class="social-button" onclick="openLink('https://t.me/enjoymedteam')">
-      <i class="fab fa-telegram"></i> Telegram Account
-    </button>
-    <button class="social-button" onclick="openLink('https://t.me/enjoymed')">
-      <i class="fas fa-bullhorn"></i> Telegram Channel
-    </button>
-    <button class="social-button" onclick="openLink('https://t.me/enjoymedquiz')">
-      <i class="fas fa-question-circle"></i> Quiz Channel
-    </button>
-    <button class="social-button" onclick="openLink('https://facebook.com/your_page')">
-      <i class="fab fa-facebook-f"></i> Facebook Page
-    </button>
-    <button class="social-button" onclick="openLink('https://wa.me/your_number')">
-      <i class="fab fa-whatsapp"></i> WhatsApp
-    </button>
-  </div>
+    <div class="info-text">Tap any button to edit</div>
 
-  <!-- FAQ Section -->
-  <div class="faq-section">
-    <div class="faq-title">الأسئلة الشائعة</div>
-
-    <div class="faq-item">
-      <div class="faq-question" onclick="toggleFAQ(this)">
-        هل يمكن شراء الكتب PDF ؟
-        <i class="fas fa-chevron-down"></i>
-      </div>
-      <div class="faq-answer">نعم، يمكنك شراء الكتب من خلال البوت أو عن طريق التواصل معنا من خلال حساب التليجرام.</div>
+    <div id="modal" class="modal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="stopPropagation(event)">
+            <h3>Edit Button</h3>
+            <input type="text" id="btn-label" placeholder="Button label">
+            <select id="btn-type">
+                <option value="url">URL - Opens website</option>
+                <option value="popup">Popup - Alert with OK</option>
+                <option value="silent">Silent - Brief notification</option>
+                <option value="share">Share - Share text to chat</option>
+                <option value="copy">Copy - Copy to clipboard</option>
+                <option value="webapp">WebApp - Opens web app</option>
+                <option value="inline">Inline - Inline search</option>
+            </select>
+            <input type="text" id="btn-value" placeholder="Value (URL, text, etc.)">
+            <div class="color-buttons">
+                <button class="color-option primary" onclick="setColor('primary')">Primary</button>
+                <button class="color-option success" onclick="setColor('success')">Success</button>
+                <button class="color-option danger" onclick="setColor('danger')">Danger</button>
+                <button class="color-option none" onclick="setColor('')">Default</button>
+            </div>
+            <div class="modal-buttons">
+                <button onclick="saveButton()">Save</button>
+                <button onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
     </div>
 
-    <div class="faq-item">
-      <div class="faq-question" onclick="toggleFAQ(this)">
-        ماذا أفعل إذا لم أجد الكتاب متاحاً في البوت ؟
-        <i class="fas fa-chevron-down"></i>
-      </div>
-      <div class="faq-answer">يمكنك التواصل معنا عن طريق حساب التليجرام.</div>
-    </div>
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.enableClosingConfirmation();
+        tg.ready();
 
-    <div class="faq-item">
-      <div class="faq-question" onclick="toggleFAQ(this)">
-        هل يمكن شراء الكتب مطبوعة ؟
-        <i class="fas fa-chevron-down"></i>
-      </div>
-      <div class="faq-answer">نعم، يمكن شراء الكتب مطبوعة عن طريق حجز الكتاب من خلال الراوبط الموجودة في القناة ثم التوجه إلى المكتبة وطلب الكتاب بمجرد إخبارهم باسمك أو رقم الهاتف.</div>
-    </div>
+        function hapticLight() {
+            tg.HapticFeedback.impactOccurred('light');
+        }
+        
+        function hapticSuccess() {
+            tg.HapticFeedback.notificationOccurred('success');
+        }
 
-    <div class="faq-item">
-      <div class="faq-question" onclick="toggleFAQ(this)">
-        كيف يمكنني التواصل معكم ؟
-        <i class="fas fa-chevron-down"></i>
-      </div>
-      <div class="faq-answer">يمكنك التواصل معنا من خلال حساب التليجرام أو رابط الواتساب أعلاه.</div>
-    </div>
+        function showToast(message, isError = false) {
+            let toast = document.createElement('div');
+            toast.className = 'toast' + (isError ? ' error' : '');
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+            if (isError) {
+                tg.HapticFeedback.notificationOccurred('error');
+            } else {
+                hapticSuccess();
+            }
+        }
 
-    <div class="faq-item">
-      <div class="faq-question" onclick="toggleFAQ(this)">
-        هل يمكنني اقتراح ميزة جديدة ؟
-        <i class="fas fa-chevron-down"></i>
-      </div>
-      <div class="faq-answer">بكل تأكيد! أرسل لنا رسالة عبر التليجرام وأخبرنا بما ترغب في إضافته.</div>
-    </div>
-  </div>
+        async function saveToCloud() {
+            try {
+                await tg.CloudStorage.setItem('button_rows', JSON.stringify(rows));
+            } catch(e) {}
+        }
+        
+        async function loadFromCloud() {
+            try {
+                let saved = await tg.CloudStorage.getItem('button_rows');
+                if (saved) return JSON.parse(saved);
+            } catch(e) {
+                let saved = localStorage.getItem('button_rows');
+                if (saved) return JSON.parse(saved);
+            }
+            return null;
+        }
 
-  <!-- Chat Icon -->
-  <div class="chat-icon" onclick="openLink('https://t.me/enjoymedteam')">
-    <i class="fab fa-telegram-plane"></i>
-  </div>
+        tg.MainButton.setText("Send to Bot");
+        tg.MainButton.onClick(() => {
+            hapticLight();
+            sendToBot();
+        });
+        tg.MainButton.show();
 
-  <script>
-    function openLink(url) {
-      window.open(url, "_blank");
-    }
+        tg.BackButton.onClick(() => {
+            hapticLight();
+            if (document.getElementById('modal').style.display === 'flex') {
+                closeModal();
+            }
+        });
 
-    function toggleFAQ(element) {
-      const item = element.closest('.faq-item');
-      item.classList.toggle('open');
-    }
+        let rows = [];
+        let editRowIndex = null;
+        let editBtnIndex = null;
 
-    if (window.Telegram && Telegram.WebApp) {
-      Telegram.WebApp.ready();
-      Telegram.WebApp.expand();
+        async function saveToStorage() {
+            await saveToCloud();
+            localStorage.setItem('button_rows', JSON.stringify(rows));
+        }
 
-      Telegram.WebApp.BackButton.show();
-      Telegram.WebApp.BackButton.onClick(() => Telegram.WebApp.close());
+        async function loadFromStorage() {
+            let saved = await loadFromCloud();
+            if (!saved || saved.length === 0) {
+                saved = localStorage.getItem('button_rows');
+                if (saved) saved = JSON.parse(saved);
+            }
+            if (saved && saved.length > 0) {
+                rows = saved;
+            } else {
+                rows = [
+                    [{ label: "Subscribe", type: "url", value: "https://t.me/yourchannel", color: "primary" }],
+                    [{ label: "Share", type: "share", value: "Check out this channel!", color: "success" }]
+                ];
+            }
+            render();
+        }
 
-      Telegram.WebApp.onEvent("themeChanged", () => {
-        const theme = Telegram.WebApp.themeParams;
-        document.documentElement.style.setProperty('--text-color', theme.text_color || '#fff');
-        document.documentElement.style.setProperty('--button-text-color', theme.button_text_color || '#fff');
-      });
-    }
-  </script>
+        function escapeHtml(text) {
+            if (!text) return '';
+            let div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function getTypeLabel(type) {
+            let labels = {
+                'url': 'URL', 'popup': 'Popup', 'silent': 'Silent', 
+                'share': 'Share', 'copy': 'Copy', 'webapp': 'WebApp', 'inline': 'Inline'
+            };
+            return labels[type] || type;
+        }
+
+        function render() {
+            let container = document.getElementById('rows-container');
+            if (!container) return;
+            
+            if (rows.length === 0) {
+                container.innerHTML = '<div class="empty-state">No buttons yet<br>Click "Add Row" to start</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            
+            for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+                let row = rows[rowIndex];
+                let rowDiv = document.createElement('div');
+                rowDiv.className = 'row';
+                rowDiv.innerHTML = `
+                    <div class="row-header">
+                        <span class="row-title">Row ${rowIndex + 1}</span>
+                        <button class="delete-row-btn" onclick="deleteRow(${rowIndex})">Delete Row</button>
+                    </div>
+                    <div class="buttons-container" id="buttons-container-${rowIndex}"></div>
+                    <button class="add-btn" onclick="addButton(${rowIndex})">Add Button to Row ${rowIndex + 1}</button>
+                `;
+                
+                let buttonsContainer = rowDiv.querySelector(`#buttons-container-${rowIndex}`);
+                
+                for (let btnIndex = 0; btnIndex < row.length; btnIndex++) {
+                    let button = row[btnIndex];
+                    let btnCard = document.createElement('div');
+                    btnCard.className = 'button-card';
+                    btnCard.onclick = (function(r, b) {
+                        return function() { openModal(r, b); };
+                    })(rowIndex, btnIndex);
+                    
+                    btnCard.innerHTML = `
+                        <div class="button-label">${escapeHtml(button.label)}</div>
+                        <div class="button-type">${getTypeLabel(button.type)}</div>
+                        <div class="button-value">${escapeHtml(button.value.substring(0, 40))}${button.value.length > 40 ? '...' : ''}</div>
+                        <div class="button-actions">
+                            <button class="edit-btn" onclick="event.stopPropagation(); openModal(${rowIndex}, ${btnIndex})">Edit</button>
+                            <button class="delete-btn" onclick="event.stopPropagation(); deleteButton(${rowIndex}, ${btnIndex})">Delete</button>
+                        </div>
+                    `;
+                    buttonsContainer.appendChild(btnCard);
+                }
+                container.appendChild(rowDiv);
+            }
+            saveToStorage();
+        }
+
+        function addRow() {
+            hapticLight();
+            rows.push([]);
+            render();
+            showToast("Row added");
+        }
+
+        function deleteRow(rowIndex) {
+            hapticLight();
+            tg.showConfirm(`Delete Row ${rowIndex + 1}?`, (confirmed) => {
+                if (confirmed) {
+                    rows.splice(rowIndex, 1);
+                    render();
+                    showToast("Row deleted");
+                }
+            });
+        }
+
+        function addButton(rowIndex) {
+            hapticLight();
+            rows[rowIndex].push({
+                label: "New Button",
+                type: "url",
+                value: "https://",
+                color: "primary"
+            });
+            render();
+            showToast("Button added");
+        }
+
+        function deleteButton(rowIndex, btnIndex) {
+            hapticLight();
+            tg.showConfirm(`Delete this button?`, (confirmed) => {
+                if (confirmed) {
+                    rows[rowIndex].splice(btnIndex, 1);
+                    if (rows[rowIndex].length === 0) {
+                        rows.splice(rowIndex, 1);
+                    }
+                    render();
+                    showToast("Button deleted");
+                }
+            });
+        }
+
+        function openModal(rowIndex, btnIndex) {
+            hapticLight();
+            editRowIndex = rowIndex;
+            editBtnIndex = btnIndex;
+            tg.BackButton.show();
+            
+            let button = rows[rowIndex][btnIndex];
+            document.getElementById('btn-label').value = button.label || '';
+            document.getElementById('btn-type').value = button.type || 'url';
+            document.getElementById('btn-value').value = button.value || '';
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function setColor(color) {
+            hapticLight();
+            if (editRowIndex !== null && editBtnIndex !== null) {
+                rows[editRowIndex][editBtnIndex].color = color;
+                render();
+            }
+        }
+
+        function saveButton() {
+            if (editRowIndex !== null && editBtnIndex !== null) {
+                let button = rows[editRowIndex][editBtnIndex];
+                button.label = document.getElementById('btn-label').value || "Button";
+                button.type = document.getElementById('btn-type').value;
+                button.value = document.getElementById('btn-value').value || "";
+                render();
+                showToast("Button saved");
+                hapticSuccess();
+            }
+            closeModal();
+        }
+
+        function closeModal(event) {
+            document.getElementById('modal').style.display = 'none';
+            editRowIndex = null;
+            editBtnIndex = null;
+            tg.BackButton.hide();
+        }
+
+        function stopPropagation(event) {
+            if (event) event.stopPropagation();
+        }
+
+        function sendToBot() {
+            if (rows.length === 0) {
+                tg.showAlert("Please add at least one button!");
+                return;
+            }
+            
+            tg.MainButton.showProgress(false);
+            
+            let buttonsText = [];
+            for (let i = 0; i < rows.length; i++) {
+                let rowButtons = [];
+                for (let j = 0; j < rows[i].length; j++) {
+                    let btn = rows[i][j];
+                    let btnText = `${btn.label} | ${btn.type} | ${btn.value}`;
+                    if (btn.color && btn.color !== '') {
+                        btnText += ` | ${btn.color}`;
+                    }
+                    rowButtons.push(btnText);
+                }
+                buttonsText.push(rowButtons.join(' + '));
+            }
+            
+            try {
+                tg.sendData(buttonsText.join('\n'));
+                showToast("Sent to bot!");
+                setTimeout(() => tg.close(), 500);
+            } catch(e) {
+                tg.MainButton.hideProgress();
+                tg.showAlert("Error: " + e.message);
+                showToast("Error sending", true);
+            }
+        }
+
+        loadFromStorage();
+        setTimeout(() => showToast("Button Builder ready"), 500);
+    </script>
 </body>
 </html>
