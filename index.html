@@ -122,7 +122,6 @@
             opacity: 0.5;
         }
 
-        /* Validation error styles */
         .button-card.has-error {
             border: 1.5px solid var(--tg-theme-destructive-bg-color);
             background: rgba(229, 57, 53, 0.1);
@@ -235,9 +234,125 @@
             border-left: 3px solid var(--tg-theme-destructive-bg-color);
         }
 
-        .validation-summary.warning {
+        /* Type selector button */
+        .type-selector-btn {
+            background: var(--tg-theme-secondary-bg-color);
+            border: 0.5px solid var(--tg-theme-hint-color);
+            border-radius: 10px;
+            padding: 12px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            margin: 8px 0;
+            color: var(--tg-theme-text-color);
+            font-size: 15px;
+        }
+
+        .type-selector-btn span:first-child {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Bottom Sheet */
+        .bottom-sheet {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--tg-theme-bg-color);
+            border-radius: 20px 20px 0 0;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        }
+
+        .bottom-sheet.open {
+            transform: translateY(0);
+        }
+
+        .bottom-sheet-header {
+            padding: 16px;
+            border-bottom: 0.5px solid var(--tg-theme-hint-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: var(--tg-theme-bg-color);
+        }
+
+        .bottom-sheet-header h3 {
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .close-sheet {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
             color: var(--tg-theme-hint-color);
-            border-left: 3px solid var(--tg-theme-button-color);
+        }
+
+        .type-option {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            border-bottom: 0.5px solid var(--tg-theme-hint-color);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .type-option:active {
+            background: var(--tg-theme-secondary-bg-color);
+        }
+
+        .type-icon {
+            font-size: 28px;
+            width: 48px;
+            text-align: center;
+        }
+
+        .type-info {
+            flex: 1;
+        }
+
+        .type-name {
+            font-weight: 500;
+            font-size: 16px;
+            margin-bottom: 2px;
+        }
+
+        .type-description {
+            font-size: 12px;
+            color: var(--tg-theme-hint-color);
+        }
+
+        .type-example {
+            font-size: 11px;
+            color: var(--tg-theme-button-color);
+            margin-top: 2px;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        .overlay.open {
+            display: block;
         }
 
         .modal {
@@ -267,7 +382,7 @@
             font-weight: 600;
         }
 
-        .modal-content input, .modal-content select {
+        .modal-content input {
             width: 100%;
             padding: 12px;
             margin: 8px 0;
@@ -363,30 +478,6 @@
             background: var(--tg-theme-destructive-bg-color);
             color: var(--tg-theme-destructive-text-color);
         }
-
-        @media (hover: hover) {
-            .delete-row-btn:hover,
-            .edit-btn:hover,
-            .delete-btn:hover,
-            .duplicate-btn:hover,
-            .add-btn:hover,
-            .add-row-btn:hover,
-            .color-option:hover,
-            .modal-buttons button:hover {
-                opacity: 1;
-            }
-        }
-
-        .delete-row-btn,
-        .edit-btn,
-        .delete-btn,
-        .duplicate-btn,
-        .add-btn,
-        .add-row-btn,
-        .color-option,
-        .modal-buttons button {
-            transition: none;
-        }
     </style>
 </head>
 <body>
@@ -401,22 +492,91 @@
 
     <div class="info-text">Tap any button to edit • Drag ⋮⋮ to reorder rows • Drag buttons to reorder</div>
 
+    <!-- Overlay -->
+    <div id="overlay" class="overlay" onclick="closeBottomSheet()"></div>
+
+    <!-- Bottom Sheet for Type Selection -->
+    <div id="bottomSheet" class="bottom-sheet">
+        <div class="bottom-sheet-header">
+            <h3>Select Button Type</h3>
+            <button class="close-sheet" onclick="closeBottomSheet()">✕</button>
+        </div>
+        <div id="type-options">
+            <!-- URL Type -->
+            <div class="type-option" onclick="selectType('url')">
+                <div class="type-icon">🔗</div>
+                <div class="type-info">
+                    <div class="type-name">URL</div>
+                    <div class="type-description">Opens a website when clicked</div>
+                    <div class="type-example">Example: https://t.me/channel</div>
+                </div>
+            </div>
+            <!-- Popup Type -->
+            <div class="type-option" onclick="selectType('popup')">
+                <div class="type-icon">⚠️</div>
+                <div class="type-info">
+                    <div class="type-name">Popup</div>
+                    <div class="type-description">Shows an alert with OK button</div>
+                    <div class="type-example">Example: Welcome to our channel!</div>
+                </div>
+            </div>
+            <!-- Silent Type -->
+            <div class="type-option" onclick="selectType('silent')">
+                <div class="type-icon">🔔</div>
+                <div class="type-info">
+                    <div class="type-name">Silent</div>
+                    <div class="type-description">Brief notification (auto-dismiss)</div>
+                    <div class="type-example">Example: Action completed</div>
+                </div>
+            </div>
+            <!-- Share Type -->
+            <div class="type-option" onclick="selectType('share')">
+                <div class="type-icon">📤</div>
+                <div class="type-info">
+                    <div class="type-name">Share</div>
+                    <div class="type-description">Share text to any chat</div>
+                    <div class="type-example">Example: Check out this channel!</div>
+                </div>
+            </div>
+            <!-- Copy Type -->
+            <div class="type-option" onclick="selectType('copy')">
+                <div class="type-icon">📋</div>
+                <div class="type-info">
+                    <div class="type-name">Copy</div>
+                    <div class="type-description">Copies text to clipboard</div>
+                    <div class="type-example">Example: PROMO2024</div>
+                </div>
+            </div>
+            <!-- WebApp Type -->
+            <div class="type-option" onclick="selectType('webapp')">
+                <div class="type-icon">🖥️</div>
+                <div class="type-info">
+                    <div class="type-name">WebApp</div>
+                    <div class="type-description">Opens a web application</div>
+                    <div class="type-example">Example: https://example.com/app</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for editing button -->
     <div id="modal" class="modal" onclick="closeModal(event)">
         <div class="modal-content" onclick="stopPropagation(event)">
             <h3>Edit Button</h3>
             <input type="text" id="btn-label" placeholder="Button label" oninput="validateCurrentButton()">
             <div id="label-validation" class="validation-message"></div>
-            <select id="btn-type" onchange="validateCurrentButton()">
-                <option value="url">URL - Opens website</option>
-                <option value="popup">Popup - Alert with OK</option>
-                <option value="silent">Silent - Brief notification</option>
-                <option value="share">Share - Share text to chat</option>
-                <option value="copy">Copy - Copy to clipboard</option>
-                <option value="webapp">WebApp - Opens web app</option>
-                <option value="inline">Inline - Inline search</option>
-            </select>
+            
+            <!-- Type Selector Button -->
+            <div class="type-selector-btn" onclick="openBottomSheet()">
+                <span id="selected-type-display">
+                    <span>🔗</span> URL
+                </span>
+                <span>▼</span>
+            </div>
+            
             <input type="text" id="btn-value" placeholder="Value (URL, text, etc.)" oninput="validateCurrentButton()">
             <div id="value-validation" class="validation-message"></div>
+            
             <div class="color-buttons">
                 <button class="color-option primary" onclick="setColor('primary')">Primary</button>
                 <button class="color-option success" onclick="setColor('success')">Success</button>
@@ -435,6 +595,25 @@
         tg.expand();
         tg.enableClosingConfirmation();
         tg.ready();
+
+        // Type icons mapping
+        const typeIcons = {
+            'url': '🔗',
+            'popup': '⚠️',
+            'silent': '🔔',
+            'share': '📤',
+            'copy': '📋',
+            'webapp': '🖥️'
+        };
+
+        const typeNames = {
+            'url': 'URL',
+            'popup': 'Popup',
+            'silent': 'Silent',
+            'share': 'Share',
+            'copy': 'Copy',
+            'webapp': 'WebApp'
+        };
 
         // Haptic feedback
         function hapticLight() {
@@ -486,510 +665,4 @@
         tg.MainButton.onClick(() => {
             hapticLight();
             if (validateAllButtons()) {
-                sendToBot();
-            } else {
-                showToast("Fix validation errors before sending", true);
-                hapticWarning();
-            }
-        });
-        tg.MainButton.show();
-
-        // Back Button
-        tg.BackButton.onClick(() => {
-            hapticLight();
-            if (document.getElementById('modal').style.display === 'flex') {
-                closeModal();
-            }
-        });
-
-        // ============ DRAG & DROP ============
-        let draggedRowIndex = null;
-        let draggedButton = null;
-        let draggedButtonRowIndex = null;
-        let draggedButtonIndex = null;
-
-        function handleRowDragStart(e, rowIndex) {
-            draggedRowIndex = rowIndex;
-            e.target.classList.add('dragging');
-            e.dataTransfer.effectAllowed = 'move';
-        }
-
-        function handleRowDragEnd(e) {
-            e.target.classList.remove('dragging');
-            draggedRowIndex = null;
-        }
-
-        function handleRowDragOver(e, targetIndex) {
-            e.preventDefault();
-            if (draggedRowIndex === null) return;
-            if (draggedRowIndex === targetIndex) return;
-            
-            let rows = document.querySelectorAll('.row');
-            rows.forEach(row => row.classList.remove('drag-over'));
-            e.target.closest('.row').classList.add('drag-over');
-        }
-
-        function handleRowDrop(e, targetIndex) {
-            e.preventDefault();
-            if (draggedRowIndex === null) return;
-            if (draggedRowIndex === targetIndex) return;
-            
-            let rowsData = [...rows];
-            let draggedItem = rowsData[draggedRowIndex];
-            rowsData.splice(draggedRowIndex, 1);
-            rowsData.splice(targetIndex, 0, draggedItem);
-            rows = rowsData;
-            
-            render();
-            showToast("Row moved");
-            
-            document.querySelectorAll('.row').forEach(row => row.classList.remove('drag-over'));
-            draggedRowIndex = null;
-        }
-
-        function handleButtonDragStart(e, rowIndex, btnIndex) {
-            draggedButton = rows[rowIndex][btnIndex];
-            draggedButtonRowIndex = rowIndex;
-            draggedButtonIndex = btnIndex;
-            e.target.closest('.button-card').classList.add('dragging');
-            e.dataTransfer.effectAllowed = 'move';
-        }
-
-        function handleButtonDragEnd(e) {
-            if (e.target.closest('.button-card')) {
-                e.target.closest('.button-card').classList.remove('dragging');
-            }
-            draggedButton = null;
-            draggedButtonRowIndex = null;
-            draggedButtonIndex = null;
-        }
-
-        function handleButtonDragOver(e, targetRowIndex, targetBtnIndex) {
-            e.preventDefault();
-            if (draggedButton === null) return;
-        }
-
-        function handleButtonDrop(e, targetRowIndex, targetBtnIndex) {
-            e.preventDefault();
-            if (draggedButton === null) return;
-            
-            let newRows = [...rows];
-            
-            // Remove from old position
-            newRows[draggedButtonRowIndex].splice(draggedButtonIndex, 1);
-            
-            // Adjust target index if needed
-            let adjustedTargetIndex = targetBtnIndex;
-            if (draggedButtonRowIndex === targetRowIndex && draggedButtonIndex < targetBtnIndex) {
-                adjustedTargetIndex--;
-            }
-            
-            // Insert at new position
-            newRows[targetRowIndex].splice(adjustedTargetIndex, 0, draggedButton);
-            
-            // Clean up empty rows
-            newRows = newRows.filter(row => row.length > 0);
-            
-            rows = newRows;
-            render();
-            showToast("Button moved");
-            
-            draggedButton = null;
-            draggedButtonRowIndex = null;
-            draggedButtonIndex = null;
-        }
-
-        // ============ VALIDATION ============
-        function validateButton(button) {
-            let errors = [];
-            
-            // Validate label
-            if (!button.label || button.label.trim() === '') {
-                errors.push('Label is required');
-            } else if (button.label.length > 50) {
-                errors.push('Label is too long (max 50 characters)');
-            }
-            
-            // Validate value based on type
-            if (!button.value || button.value.trim() === '') {
-                errors.push(`${button.type} value is required`);
-            } else if (button.type === 'url' || button.type === 'webapp') {
-                let urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
-                if (!urlPattern.test(button.value)) {
-                    errors.push('Invalid URL format');
-                }
-            } else if (button.type === 'share' || button.type === 'copy' || button.type === 'popup' || button.type === 'silent') {
-                if (button.value.length > 200) {
-                    errors.push('Text is too long (max 200 characters)');
-                }
-            }
-            
-            return errors;
-        }
-
-        function validateAllButtons() {
-            let hasErrors = false;
-            let totalErrors = 0;
-            
-            for (let i = 0; i < rows.length; i++) {
-                for (let j = 0; j < rows[i].length; j++) {
-                    let errors = validateButton(rows[i][j]);
-                    if (errors.length > 0) {
-                        hasErrors = true;
-                        totalErrors += errors.length;
-                    }
-                }
-            }
-            
-            let summaryDiv = document.getElementById('validation-summary');
-            if (hasErrors) {
-                summaryDiv.style.display = 'block';
-                summaryDiv.className = 'validation-summary error';
-                summaryDiv.innerHTML = `⚠️ ${totalErrors} validation issue${totalErrors > 1 ? 's' : ''} found. Fix before sending.`;
-            } else {
-                summaryDiv.style.display = 'none';
-            }
-            
-            return !hasErrors;
-        }
-
-        function validateCurrentButton() {
-            let label = document.getElementById('btn-label').value;
-            let type = document.getElementById('btn-type').value;
-            let value = document.getElementById('btn-value').value;
-            
-            let labelDiv = document.getElementById('label-validation');
-            let valueDiv = document.getElementById('value-validation');
-            
-            let hasError = false;
-            
-            // Label validation
-            if (!label || label.trim() === '') {
-                labelDiv.textContent = '❌ Label is required';
-                labelDiv.classList.add('show');
-                hasError = true;
-            } else if (label.length > 50) {
-                labelDiv.textContent = '❌ Label too long (max 50)';
-                labelDiv.classList.add('show');
-                hasError = true;
-            } else {
-                labelDiv.classList.remove('show');
-            }
-            
-            // Value validation
-            if (!value || value.trim() === '') {
-                valueDiv.textContent = `❌ ${type} value is required`;
-                valueDiv.classList.add('show');
-                hasError = true;
-            } else if ((type === 'url' || type === 'webapp') && value) {
-                let urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
-                if (!urlPattern.test(value)) {
-                    valueDiv.textContent = '❌ Invalid URL format (e.g., https://example.com)';
-                    valueDiv.classList.add('show');
-                    hasError = true;
-                } else {
-                    valueDiv.classList.remove('show');
-                }
-            } else {
-                valueDiv.classList.remove('show');
-            }
-            
-            return !hasError;
-        }
-
-        // Update validation display on buttons
-        function updateButtonValidationDisplay() {
-            let allButtons = document.querySelectorAll('.button-card');
-            let btnIndex = 0;
-            
-            for (let i = 0; i < rows.length; i++) {
-                for (let j = 0; j < rows[i].length; j++) {
-                    let errors = validateButton(rows[i][j]);
-                    let btnCard = allButtons[btnIndex];
-                    if (btnCard) {
-                        if (errors.length > 0) {
-                            btnCard.classList.add('has-error');
-                            // Add error marker if not exists
-                            if (!btnCard.querySelector('.error-marker')) {
-                                let marker = document.createElement('div');
-                                marker.className = 'error-marker';
-                                marker.textContent = '!';
-                                btnCard.appendChild(marker);
-                            }
-                        } else {
-                            btnCard.classList.remove('has-error');
-                            let marker = btnCard.querySelector('.error-marker');
-                            if (marker) marker.remove();
-                        }
-                    }
-                    btnIndex++;
-                }
-            }
-        }
-
-        // ============ APP STATE ============
-        let rows = [];
-        let editRowIndex = null;
-        let editBtnIndex = null;
-        let currentEditButton = null;
-
-        async function saveToStorage() {
-            await saveToCloud();
-            localStorage.setItem('button_rows', JSON.stringify(rows));
-        }
-
-        async function loadFromStorage() {
-            let saved = await loadFromCloud();
-            if (!saved || saved.length === 0) {
-                saved = localStorage.getItem('button_rows');
-                if (saved) saved = JSON.parse(saved);
-            }
-            if (saved && saved.length > 0) {
-                rows = saved;
-            } else {
-                rows = [
-                    [{ label: "Subscribe", type: "url", value: "https://t.me/yourchannel", color: "primary" }],
-                    [{ label: "Share", type: "share", value: "Check out this channel!", color: "success" }]
-                ];
-            }
-            render();
-        }
-
-        function escapeHtml(text) {
-            if (!text) return '';
-            let div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function getTypeLabel(type) {
-            let labels = {
-                'url': 'URL', 'popup': 'Popup', 'silent': 'Silent', 
-                'share': 'Share', 'copy': 'Copy', 'webapp': 'WebApp', 'inline': 'Inline'
-            };
-            return labels[type] || type;
-        }
-
-        function render() {
-            let container = document.getElementById('rows-container');
-            if (!container) return;
-            
-            if (rows.length === 0) {
-                container.innerHTML = '<div class="empty-state">No buttons yet<br>Click "Add Row" to start</div>';
-                document.getElementById('validation-summary').style.display = 'none';
-                return;
-            }
-
-            container.innerHTML = '';
-            
-            for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
-                let row = rows[rowIndex];
-                let rowDiv = document.createElement('div');
-                rowDiv.className = 'row';
-                rowDiv.draggable = true;
-                rowDiv.setAttribute('draggable', 'true');
-                rowDiv.ondragstart = (e) => handleRowDragStart(e, rowIndex);
-                rowDiv.ondragend = (e) => handleRowDragEnd(e);
-                rowDiv.ondragover = (e) => handleRowDragOver(e, rowIndex);
-                rowDiv.ondrop = (e) => handleRowDrop(e, rowIndex);
-                
-                rowDiv.innerHTML = `
-                    <div class="row-header">
-                        <div class="row-header-left">
-                            <span class="drag-handle">⋮⋮</span>
-                            <span class="row-title">Row ${rowIndex + 1}</span>
-                        </div>
-                        <button class="delete-row-btn" onclick="deleteRow(${rowIndex})">Delete Row</button>
-                    </div>
-                    <div class="buttons-container" id="buttons-container-${rowIndex}"></div>
-                    <button class="add-btn" onclick="addButton(${rowIndex})">Add Button to Row ${rowIndex + 1}</button>
-                `;
-                
-                let buttonsContainer = rowDiv.querySelector(`#buttons-container-${rowIndex}`);
-                
-                for (let btnIndex = 0; btnIndex < row.length; btnIndex++) {
-                    let button = row[btnIndex];
-                    let errors = validateButton(button);
-                    let hasError = errors.length > 0;
-                    
-                    let btnCard = document.createElement('div');
-                    btnCard.className = 'button-card' + (hasError ? ' has-error' : '');
-                    btnCard.draggable = true;
-                    btnCard.ondragstart = (e) => handleButtonDragStart(e, rowIndex, btnIndex);
-                    btnCard.ondragend = (e) => handleButtonDragEnd(e);
-                    btnCard.ondragover = (e) => handleButtonDragOver(e, rowIndex, btnIndex);
-                    btnCard.ondrop = (e) => handleButtonDrop(e, rowIndex, btnIndex);
-                    btnCard.onclick = (function(r, b) {
-                        return function() { openModal(r, b); };
-                    })(rowIndex, btnIndex);
-                    
-                    btnCard.innerHTML = `
-                        ${hasError ? '<div class="error-marker">!</div>' : ''}
-                        <div class="button-label">${escapeHtml(button.label)}</div>
-                        <div class="button-type">${getTypeLabel(button.type)}</div>
-                        <div class="button-value">${escapeHtml(button.value.substring(0, 40))}${button.value.length > 40 ? '...' : ''}</div>
-                        <div class="button-actions">
-                            <button class="edit-btn" onclick="event.stopPropagation(); openModal(${rowIndex}, ${btnIndex})">Edit</button>
-                            <button class="duplicate-btn" onclick="event.stopPropagation(); duplicateButton(${rowIndex}, ${btnIndex})">Copy</button>
-                            <button class="delete-btn" onclick="event.stopPropagation(); deleteButton(${rowIndex}, ${btnIndex})">Delete</button>
-                        </div>
-                    `;
-                    
-                    buttonsContainer.appendChild(btnCard);
-                }
-                container.appendChild(rowDiv);
-            }
-            
-            validateAllButtons();
-            saveToStorage();
-        }
-
-        function duplicateButton(rowIndex, btnIndex) {
-            hapticLight();
-            let button = JSON.parse(JSON.stringify(rows[rowIndex][btnIndex]));
-            button.label = button.label + " (Copy)";
-            rows[rowIndex].splice(btnIndex + 1, 0, button);
-            render();
-            showToast("Button duplicated");
-        }
-
-        function addRow() {
-            hapticLight();
-            rows.push([]);
-            render();
-            showToast("Row added");
-        }
-
-        function deleteRow(rowIndex) {
-            hapticLight();
-            tg.showConfirm(`Delete Row ${rowIndex + 1}?`, (confirmed) => {
-                if (confirmed) {
-                    rows.splice(rowIndex, 1);
-                    render();
-                    showToast("Row deleted");
-                }
-            });
-        }
-
-        function addButton(rowIndex) {
-            hapticLight();
-            rows[rowIndex].push({
-                label: "New Button",
-                type: "url",
-                value: "https://",
-                color: "primary"
-            });
-            render();
-            showToast("Button added");
-        }
-
-        function deleteButton(rowIndex, btnIndex) {
-            hapticLight();
-            tg.showConfirm(`Delete this button?`, (confirmed) => {
-                if (confirmed) {
-                    rows[rowIndex].splice(btnIndex, 1);
-                    if (rows[rowIndex].length === 0) {
-                        rows.splice(rowIndex, 1);
-                    }
-                    render();
-                    showToast("Button deleted");
-                }
-            });
-        }
-
-        function openModal(rowIndex, btnIndex) {
-            hapticLight();
-            editRowIndex = rowIndex;
-            editBtnIndex = btnIndex;
-            currentEditButton = rows[rowIndex][btnIndex];
-            tg.BackButton.show();
-            
-            document.getElementById('btn-label').value = currentEditButton.label || '';
-            document.getElementById('btn-type').value = currentEditButton.type || 'url';
-            document.getElementById('btn-value').value = currentEditButton.value || '';
-            document.getElementById('modal').style.display = 'flex';
-            
-            validateCurrentButton();
-        }
-
-        function setColor(color) {
-            hapticLight();
-            if (editRowIndex !== null && editBtnIndex !== null) {
-                rows[editRowIndex][editBtnIndex].color = color;
-                render();
-            }
-        }
-
-        function saveButton() {
-            if (validateCurrentButton()) {
-                if (editRowIndex !== null && editBtnIndex !== null) {
-                    let button = rows[editRowIndex][editBtnIndex];
-                    button.label = document.getElementById('btn-label').value || "Button";
-                    button.type = document.getElementById('btn-type').value;
-                    button.value = document.getElementById('btn-value').value || "";
-                    render();
-                    showToast("Button saved");
-                    hapticSuccess();
-                }
-                closeModal();
-            } else {
-                hapticWarning();
-                showToast("Please fix validation errors", true);
-            }
-        }
-
-        function closeModal(event) {
-            document.getElementById('modal').style.display = 'none';
-            editRowIndex = null;
-            editBtnIndex = null;
-            currentEditButton = null;
-            tg.BackButton.hide();
-        }
-
-        function stopPropagation(event) {
-            if (event) event.stopPropagation();
-        }
-
-        function sendToBot() {
-            if (rows.length === 0) {
-                tg.showAlert("Please add at least one button!");
-                return;
-            }
-            
-            if (!validateAllButtons()) {
-                tg.showAlert("Please fix validation errors before sending");
-                return;
-            }
-            
-            tg.MainButton.showProgress(false);
-            
-            let buttonsText = [];
-            for (let i = 0; i < rows.length; i++) {
-                let rowButtons = [];
-                for (let j = 0; j < rows[i].length; j++) {
-                    let btn = rows[i][j];
-                    let btnText = `${btn.label} | ${btn.type} | ${btn.value}`;
-                    if (btn.color && btn.color !== '') {
-                        btnText += ` | ${btn.color}`;
-                    }
-                    rowButtons.push(btnText);
-                }
-                buttonsText.push(rowButtons.join(' + '));
-            }
-            
-            try {
-                tg.sendData(buttonsText.join('\n'));
-                showToast("Sent to bot!");
-                setTimeout(() => tg.close(), 500);
-            } catch(e) {
-                tg.MainButton.hideProgress();
-                tg.showAlert("Error: " + e.message);
-                showToast("Error sending", true);
-            }
-        }
-
-        loadFromStorage();
-        setTimeout(() => showToast("Button Builder ready"), 500);
-    </script>
-</body>
-</html>
+          
