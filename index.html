@@ -37,7 +37,6 @@
             font-size: 14px;
         }
 
-        /* Row styles */
         .row {
             background: var(--tg-theme-secondary-bg-color);
             border-radius: 14px;
@@ -140,7 +139,7 @@
         }
 
         .button-label {
-            font-weight: 500;
+            font-weight: 600;
             font-size: 14px;
             margin-bottom: 4px;
             word-break: break-word;
@@ -157,6 +156,8 @@
             color: var(--tg-theme-hint-color);
             word-break: break-all;
             white-space: pre-wrap;
+            max-height: 60px;
+            overflow-y: auto;
         }
 
         .button-actions {
@@ -235,7 +236,6 @@
             border-left: 3px solid var(--tg-theme-destructive-bg-color);
         }
 
-        /* Chips styles */
         .chips-container {
             margin: 12px 0;
         }
@@ -280,7 +280,6 @@
             color: var(--tg-theme-button-text-color);
         }
 
-        /* Modal styles */
         .modal {
             display: none;
             position: fixed;
@@ -326,9 +325,10 @@
 
         .modal-content textarea {
             resize: vertical;
-            min-height: 80px;
+            min-height: 100px;
             font-family: monospace;
             line-height: 1.4;
+            white-space: pre-wrap;
         }
 
         .char-counter {
@@ -373,12 +373,14 @@
             cursor: pointer;
             font-size: 12px;
             font-weight: 500;
+            transition: opacity 0.2s;
         }
 
         .color-option.primary { background: #3390ec; color: white; }
         .color-option.success { background: #00b93e; color: white; }
         .color-option.danger { background: #e53935; color: white; }
         .color-option.none { background: var(--tg-theme-button-color); color: var(--tg-theme-button-text-color); }
+        .color-option.active { opacity: 0.7; transform: scale(0.97); }
 
         .modal-buttons {
             display: flex;
@@ -432,6 +434,15 @@
             background: var(--tg-theme-destructive-bg-color);
             color: var(--tg-theme-destructive-text-color);
         }
+
+        .color-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 12px;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
     </style>
 </head>
 <body>
@@ -446,7 +457,6 @@
 
     <div class="info-text">Tap any button to edit • Drag ⋮⋮ to reorder rows • Drag buttons to reorder</div>
 
-    <!-- Modal for editing button -->
     <div id="modal" class="modal" onclick="closeModal(event)">
         <div class="modal-content" onclick="stopPropagation(event)">
             <h3>Edit Button</h3>
@@ -454,11 +464,10 @@
             <input type="text" id="btn-label" placeholder="Button label" oninput="validateCurrentButton()">
             <div id="label-validation" class="validation-message"></div>
             
-            <!-- Horizontal Chips for Type Selection -->
             <div class="chips-container">
                 <div class="chips-label">Button Type</div>
                 <div class="chips-scroll" id="chips-scroll">
-                    <div class="chip active" data-type="url" onclick="selectChip('url')">
+                    <div class="chip" data-type="url" onclick="selectChip('url')">
                         <span>🔗</span> URL
                     </div>
                     <div class="chip" data-type="popup" onclick="selectChip('popup')">
@@ -479,17 +488,17 @@
                 </div>
             </div>
             
-            <!-- Dynamic input field (can be input or textarea) -->
             <div id="value-input-container"></div>
             <div id="char-counter" class="char-counter"></div>
             <div id="value-validation" class="validation-message"></div>
             
             <div class="color-buttons">
-                <button class="color-option primary" onclick="setColor('primary')">Primary</button>
-                <button class="color-option success" onclick="setColor('success')">Success</button>
-                <button class="color-option danger" onclick="setColor('danger')">Danger</button>
-                <button class="color-option none" onclick="setColor('')">Default</button>
+                <button class="color-option primary" onclick="selectColor('primary')">Primary</button>
+                <button class="color-option success" onclick="selectColor('success')">Success</button>
+                <button class="color-option danger" onclick="selectColor('danger')">Danger</button>
+                <button class="color-option none" onclick="selectColor('')">Default</button>
             </div>
+            <div id="color-selected" style="font-size: 11px; text-align: center; margin-top: 4px; color: var(--tg-theme-hint-color);"></div>
             
             <div class="modal-buttons">
                 <button onclick="saveButton()">Save</button>
@@ -504,29 +513,18 @@
         tg.enableClosingConfirmation();
         tg.ready();
 
-        // Type configuration
         const typeIcons = {
-            'url': '🔗',
-            'popup': '⚠️',
-            'silent': '🔔',
-            'share': '📤',
-            'copy': '📋',
-            'webapp': '🖥️'
+            'url': '🔗', 'popup': '⚠️', 'silent': '🔔',
+            'share': '📤', 'copy': '📋', 'webapp': '🖥️'
         };
 
         const typeNames = {
-            'url': 'URL',
-            'popup': 'Popup',
-            'silent': 'Silent',
-            'share': 'Share',
-            'copy': 'Copy',
-            'webapp': 'WebApp'
+            'url': 'URL', 'popup': 'Popup', 'silent': 'Silent',
+            'share': 'Share', 'copy': 'Copy', 'webapp': 'WebApp'
         };
 
-        // Types that need multi-line input
         const multiLineTypes = ['popup', 'silent', 'share', 'copy'];
         
-        // Max character limits
         const maxChars = {
             'popup': 200,
             'silent': 200,
@@ -538,11 +536,11 @@
 
         let currentType = 'url';
         let currentValue = '';
+        let currentColor = '';
         let rows = [];
         let editRowIndex = null;
         let editBtnIndex = null;
 
-        // Haptic feedback
         function hapticLight() {
             tg.HapticFeedback.impactOccurred('light');
         }
@@ -568,7 +566,6 @@
             }
         }
 
-        // Cloud storage
         async function saveToCloud() {
             try {
                 await tg.CloudStorage.setItem('button_rows', JSON.stringify(rows));
@@ -586,7 +583,6 @@
             return null;
         }
 
-        // Main Button
         tg.MainButton.setText("Send to Bot");
         tg.MainButton.onClick(() => {
             hapticLight();
@@ -606,16 +602,36 @@
             }
         });
 
-        // Dynamic value input field based on type
+        function selectColor(color) {
+            hapticLight();
+            currentColor = color;
+            
+            // Update visual indication
+            document.querySelectorAll('.color-option').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            if (color === 'primary') {
+                document.querySelector('.color-option.primary').classList.add('active');
+                document.getElementById('color-selected').innerHTML = '🎨 Color: 🔵 Primary';
+            } else if (color === 'success') {
+                document.querySelector('.color-option.success').classList.add('active');
+                document.getElementById('color-selected').innerHTML = '🎨 Color: 🟢 Success';
+            } else if (color === 'danger') {
+                document.querySelector('.color-option.danger').classList.add('active');
+                document.getElementById('color-selected').innerHTML = '🎨 Color: 🔴 Danger';
+            } else {
+                document.getElementById('color-selected').innerHTML = '🎨 Color: Default (no style)';
+            }
+        }
+
         function updateValueInputField() {
             const container = document.getElementById('value-input-container');
             const isMultiLine = multiLineTypes.includes(currentType);
             const maxChar = maxChars[currentType];
-            const currentValueField = currentValue || '';
             
             if (isMultiLine) {
                 container.innerHTML = `
-                    <textarea id="btn-value" placeholder="Enter message (max ${maxChar} characters)" rows="4">${escapeHtml(currentValueField)}</textarea>
+                    <textarea id="btn-value" placeholder="Enter message (max ${maxChar} characters)&#10;Line breaks are supported." rows="5">${escapeHtmlForTextarea(currentValue)}</textarea>
                 `;
                 const textarea = document.getElementById('btn-value');
                 if (textarea) {
@@ -627,7 +643,7 @@
                 }
             } else {
                 container.innerHTML = `
-                    <input type="text" id="btn-value" placeholder="Enter URL" value="${escapeHtml(currentValueField)}">
+                    <input type="text" id="btn-value" placeholder="Enter URL" value="${escapeHtml(currentValue)}">
                 `;
                 const input = document.getElementById('btn-value');
                 if (input) {
@@ -641,6 +657,15 @@
             updateCharCounter();
         }
         
+        function escapeHtmlForTextarea(text) {
+            if (!text) return '';
+            return text.replace(/&/g, '&amp;')
+                       .replace(/</g, '&lt;')
+                       .replace(/>/g, '&gt;')
+                       .replace(/"/g, '&quot;')
+                       .replace(/'/g, '&#39;');
+        }
+        
         function updateCharCounter() {
             const counterDiv = document.getElementById('char-counter');
             const maxChar = maxChars[currentType];
@@ -652,10 +677,10 @@
                 counterDiv.style.display = 'block';
                 if (remaining < 0) {
                     counterDiv.className = 'char-counter danger';
-                    counterDiv.innerHTML = `⚠️ ${Math.abs(remaining)} characters over limit (${length}/${maxChar})`;
+                    counterDiv.innerHTML = `⚠️ ${Math.abs(remaining)} character${Math.abs(remaining) !== 1 ? 's' : ''} over limit (${length}/${maxChar})`;
                 } else if (remaining < 20) {
                     counterDiv.className = 'char-counter warning';
-                    counterDiv.innerHTML = `📝 ${remaining} characters remaining (${length}/${maxChar})`;
+                    counterDiv.innerHTML = `⚠️ ${remaining} character${remaining !== 1 ? 's' : ''} remaining (${length}/${maxChar})`;
                 } else {
                     counterDiv.className = 'char-counter';
                     counterDiv.innerHTML = `📝 ${length}/${maxChar} characters`;
@@ -665,12 +690,10 @@
             }
         }
 
-        // Chip selection
         function selectChip(type) {
             hapticLight();
             currentType = type;
             
-            // Update active state on chips
             document.querySelectorAll('.chip').forEach(chip => {
                 chip.classList.remove('active');
                 if (chip.getAttribute('data-type') === type) {
@@ -678,12 +701,10 @@
                 }
             });
             
-            // Update input field type
             updateValueInputField();
             validateCurrentButton();
         }
 
-        // Drag & Drop functions
         let draggedRowIndex = null;
         let draggedButton = null;
         let draggedButtonRowIndex = null;
@@ -775,7 +796,6 @@
             draggedButtonIndex = null;
         }
 
-        // Validation functions
         function validateButton(button) {
             let errors = [];
             
@@ -791,8 +811,6 @@
                 const max = maxChars[button.type];
                 if (button.value.length > max) {
                     errors.push(`Text is too long (max ${max} characters, currently ${button.value.length})`);
-                } else if (button.value.length === 0) {
-                    errors.push(`Text cannot be empty`);
                 }
             } else if (button.type === 'url' || button.type === 'webapp') {
                 let urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
@@ -915,7 +933,8 @@
                 if (multiLineTypes.includes(type)) {
                     let lines = value.split('\n');
                     if (lines.length > 2) {
-                        return lines[0].substring(0, 30) + '... +' + (lines.length - 1) + ' lines';
+                        let preview = lines[0].substring(0, 30);
+                        return preview + '... +' + (lines.length - 1) + ' lines';
                     }
                 }
                 return value.substring(0, 40) + '...';
@@ -976,9 +995,14 @@
                         return function() { openModal(r, b); };
                     })(rowIndex, btnIndex);
                     
+                    let colorIndicator = '';
+                    if (button.color === 'primary') colorIndicator = '<span class="color-indicator" style="background: #3390ec;"></span>';
+                    else if (button.color === 'success') colorIndicator = '<span class="color-indicator" style="background: #00b93e;"></span>';
+                    else if (button.color === 'danger') colorIndicator = '<span class="color-indicator" style="background: #e53935;"></span>';
+                    
                     btnCard.innerHTML = `
                         ${hasError ? '<div class="error-marker">!</div>' : ''}
-                        <div class="button-label">${escapeHtml(button.label)}</div>
+                        <div class="button-label">${escapeHtml(button.label)}${colorIndicator}</div>
                         <div class="button-type">${typeNames[button.type] || button.type}</div>
                         <div class="button-value">${escapeHtml(getButtonValuePreview(button.value, button.type))}</div>
                         <div class="button-actions">
@@ -1076,12 +1100,12 @@
             let button = rows[rowIndex][btnIndex];
             currentType = button.type;
             currentValue = button.value || '';
+            currentColor = button.color || '';
             
             tg.BackButton.show();
             
             document.getElementById('btn-label').value = button.label || '';
             
-            // Update active chip
             document.querySelectorAll('.chip').forEach(chip => {
                 chip.classList.remove('active');
                 if (chip.getAttribute('data-type') === button.type) {
@@ -1089,19 +1113,11 @@
                 }
             });
             
-            // Update input field based on type
+            selectColor(currentColor);
             updateValueInputField();
             
             document.getElementById('modal').style.display = 'flex';
             setTimeout(() => validateCurrentButton(), 50);
-        }
-
-        function setColor(color) {
-            hapticLight();
-            if (editRowIndex !== null && editBtnIndex !== null) {
-                rows[editRowIndex][editBtnIndex].color = color;
-                render();
-            }
         }
 
         function saveButton() {
@@ -1111,6 +1127,7 @@
                     button.label = document.getElementById('btn-label').value || "Button";
                     button.type = currentType;
                     button.value = currentValue;
+                    button.color = currentColor;
                     render();
                     showToast("Button saved");
                     hapticSuccess();
@@ -1162,8 +1179,11 @@
                 buttonsText.push(rowButtons.join(' + '));
             }
             
+            let finalText = buttonsText.join('\n');
+            console.log('Sending to bot:', finalText);
+            
             try {
-                tg.sendData(buttonsText.join('\n'));
+                tg.sendData(finalText);
                 showToast("Sent to bot!");
                 setTimeout(() => tg.close(), 500);
             } catch(e) {
