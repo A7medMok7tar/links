@@ -156,6 +156,7 @@
             font-size: 10px;
             color: var(--tg-theme-hint-color);
             word-break: break-all;
+            white-space: pre-wrap;
         }
 
         .button-actions {
@@ -234,7 +235,7 @@
             border-left: 3px solid var(--tg-theme-destructive-bg-color);
         }
 
-        /* ============ HORIZONTAL CHIPS ============ */
+        /* Chips styles */
         .chips-container {
             margin: 12px 0;
         }
@@ -299,6 +300,8 @@
             padding: 20px;
             width: 90%;
             max-width: 340px;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .modal-content h3 {
@@ -307,7 +310,7 @@
             font-weight: 600;
         }
 
-        .modal-content input {
+        .modal-content input, .modal-content textarea, .modal-content select {
             width: 100%;
             padding: 12px;
             margin: 8px 0;
@@ -318,6 +321,30 @@
             font-size: 15px;
             -webkit-appearance: none;
             appearance: none;
+            font-family: inherit;
+        }
+
+        .modal-content textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: monospace;
+            line-height: 1.4;
+        }
+
+        .char-counter {
+            font-size: 11px;
+            text-align: right;
+            margin-top: -4px;
+            margin-bottom: 8px;
+            color: var(--tg-theme-hint-color);
+        }
+
+        .char-counter.warning {
+            color: #ffaa00;
+        }
+
+        .char-counter.danger {
+            color: var(--tg-theme-destructive-text-color);
         }
 
         .validation-message {
@@ -452,7 +479,9 @@
                 </div>
             </div>
             
-            <input type="text" id="btn-value" placeholder="Value (URL, text, etc.)" oninput="validateCurrentButton()">
+            <!-- Dynamic input field (can be input or textarea) -->
+            <div id="value-input-container"></div>
+            <div id="char-counter" class="char-counter"></div>
             <div id="value-validation" class="validation-message"></div>
             
             <div class="color-buttons">
@@ -494,7 +523,24 @@
             'webapp': 'WebApp'
         };
 
+        // Types that need multi-line input
+        const multiLineTypes = ['popup', 'silent', 'share', 'copy'];
+        
+        // Max character limits
+        const maxChars = {
+            'popup': 200,
+            'silent': 200,
+            'share': 200,
+            'copy': 200,
+            'url': null,
+            'webapp': null
+        };
+
         let currentType = 'url';
+        let currentValue = '';
+        let rows = [];
+        let editRowIndex = null;
+        let editBtnIndex = null;
 
         // Haptic feedback
         function hapticLight() {
@@ -509,7 +555,6 @@
             tg.HapticFeedback.notificationOccurred('warning');
         }
 
-        // Toast notification
         function showToast(message, isError = false) {
             let toast = document.createElement('div');
             toast.className = 'toast' + (isError ? ' error' : '');
@@ -554,13 +599,71 @@
         });
         tg.MainButton.show();
 
-        // Back Button
         tg.BackButton.onClick(() => {
             hapticLight();
             if (document.getElementById('modal').style.display === 'flex') {
                 closeModal();
             }
         });
+
+        // Dynamic value input field based on type
+        function updateValueInputField() {
+            const container = document.getElementById('value-input-container');
+            const isMultiLine = multiLineTypes.includes(currentType);
+            const maxChar = maxChars[currentType];
+            const currentValueField = currentValue || '';
+            
+            if (isMultiLine) {
+                container.innerHTML = `
+                    <textarea id="btn-value" placeholder="Enter message (max ${maxChar} characters)" rows="4">${escapeHtml(currentValueField)}</textarea>
+                `;
+                const textarea = document.getElementById('btn-value');
+                if (textarea) {
+                    textarea.oninput = function() {
+                        currentValue = this.value;
+                        updateCharCounter();
+                        validateCurrentButton();
+                    };
+                }
+            } else {
+                container.innerHTML = `
+                    <input type="text" id="btn-value" placeholder="Enter URL" value="${escapeHtml(currentValueField)}">
+                `;
+                const input = document.getElementById('btn-value');
+                if (input) {
+                    input.oninput = function() {
+                        currentValue = this.value;
+                        validateCurrentButton();
+                    };
+                }
+            }
+            
+            updateCharCounter();
+        }
+        
+        function updateCharCounter() {
+            const counterDiv = document.getElementById('char-counter');
+            const maxChar = maxChars[currentType];
+            
+            if (maxChar && multiLineTypes.includes(currentType)) {
+                const length = currentValue.length;
+                const remaining = maxChar - length;
+                
+                counterDiv.style.display = 'block';
+                if (remaining < 0) {
+                    counterDiv.className = 'char-counter danger';
+                    counterDiv.innerHTML = `⚠️ ${Math.abs(remaining)} characters over limit (${length}/${maxChar})`;
+                } else if (remaining < 20) {
+                    counterDiv.className = 'char-counter warning';
+                    counterDiv.innerHTML = `📝 ${remaining} characters remaining (${length}/${maxChar})`;
+                } else {
+                    counterDiv.className = 'char-counter';
+                    counterDiv.innerHTML = `📝 ${length}/${maxChar} characters`;
+                }
+            } else {
+                counterDiv.style.display = 'none';
+            }
+        }
 
         // Chip selection
         function selectChip(type) {
@@ -575,6 +678,8 @@
                 }
             });
             
+            // Update input field type
+            updateValueInputField();
             validateCurrentButton();
         }
 
@@ -681,15 +786,18 @@
             }
             
             if (!button.value || button.value.trim() === '') {
-                errors.push(`${button.type} value is required`);
-            } else if ((button.type === 'url' || button.type === 'webapp')) {
+                errors.push(`${typeNames[button.type]} value is required`);
+            } else if (multiLineTypes.includes(button.type)) {
+                const max = maxChars[button.type];
+                if (button.value.length > max) {
+                    errors.push(`Text is too long (max ${max} characters, currently ${button.value.length})`);
+                } else if (button.value.length === 0) {
+                    errors.push(`Text cannot be empty`);
+                }
+            } else if (button.type === 'url' || button.type === 'webapp') {
                 let urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
                 if (!urlPattern.test(button.value)) {
                     errors.push('Invalid URL format');
-                }
-            } else if (['share', 'copy', 'popup', 'silent'].includes(button.type)) {
-                if (button.value.length > 200) {
-                    errors.push('Text is too long (max 200)');
                 }
             }
             
@@ -724,7 +832,7 @@
 
         function validateCurrentButton() {
             let label = document.getElementById('btn-label').value;
-            let value = document.getElementById('btn-value').value;
+            let value = currentValue;
             
             let labelDiv = document.getElementById('label-validation');
             let valueDiv = document.getElementById('value-validation');
@@ -747,7 +855,16 @@
                 valueDiv.textContent = `❌ ${typeNames[currentType]} value is required`;
                 valueDiv.classList.add('show');
                 hasError = true;
-            } else if ((currentType === 'url' || currentType === 'webapp')) {
+            } else if (multiLineTypes.includes(currentType)) {
+                const max = maxChars[currentType];
+                if (value.length > max) {
+                    valueDiv.textContent = `❌ Text too long (max ${max} characters, currently ${value.length})`;
+                    valueDiv.classList.add('show');
+                    hasError = true;
+                } else {
+                    valueDiv.classList.remove('show');
+                }
+            } else if (currentType === 'url' || currentType === 'webapp') {
                 let urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
                 if (!urlPattern.test(value)) {
                     valueDiv.textContent = '❌ Invalid URL format (e.g., https://example.com)';
@@ -762,11 +879,6 @@
             
             return !hasError;
         }
-
-        // Main app state
-        let rows = [];
-        let editRowIndex = null;
-        let editBtnIndex = null;
 
         async function saveToStorage() {
             await saveToCloud();
@@ -795,6 +907,20 @@
             let div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
+        }
+
+        function getButtonValuePreview(value, type) {
+            if (!value) return '';
+            if (value.length > 40) {
+                if (multiLineTypes.includes(type)) {
+                    let lines = value.split('\n');
+                    if (lines.length > 2) {
+                        return lines[0].substring(0, 30) + '... +' + (lines.length - 1) + ' lines';
+                    }
+                }
+                return value.substring(0, 40) + '...';
+            }
+            return value;
         }
 
         function render() {
@@ -854,7 +980,7 @@
                         ${hasError ? '<div class="error-marker">!</div>' : ''}
                         <div class="button-label">${escapeHtml(button.label)}</div>
                         <div class="button-type">${typeNames[button.type] || button.type}</div>
-                        <div class="button-value">${escapeHtml(button.value.substring(0, 40))}${button.value.length > 40 ? '...' : ''}</div>
+                        <div class="button-value">${escapeHtml(getButtonValuePreview(button.value, button.type))}</div>
                         <div class="button-actions">
                             <button class="edit-btn" onclick="event.stopPropagation(); openModal(${rowIndex}, ${btnIndex})">Edit</button>
                             <button class="duplicate-btn" onclick="event.stopPropagation(); duplicateButton(${rowIndex}, ${btnIndex})">Copy</button>
@@ -949,11 +1075,11 @@
             editBtnIndex = btnIndex;
             let button = rows[rowIndex][btnIndex];
             currentType = button.type;
+            currentValue = button.value || '';
             
             tg.BackButton.show();
             
             document.getElementById('btn-label').value = button.label || '';
-            document.getElementById('btn-value').value = button.value || '';
             
             // Update active chip
             document.querySelectorAll('.chip').forEach(chip => {
@@ -962,6 +1088,9 @@
                     chip.classList.add('active');
                 }
             });
+            
+            // Update input field based on type
+            updateValueInputField();
             
             document.getElementById('modal').style.display = 'flex';
             setTimeout(() => validateCurrentButton(), 50);
@@ -981,7 +1110,7 @@
                     let button = rows[editRowIndex][editBtnIndex];
                     button.label = document.getElementById('btn-label').value || "Button";
                     button.type = currentType;
-                    button.value = document.getElementById('btn-value').value || "";
+                    button.value = currentValue;
                     render();
                     showToast("Button saved");
                     hapticSuccess();
@@ -998,6 +1127,7 @@
             editRowIndex = null;
             editBtnIndex = null;
             currentType = 'url';
+            currentValue = '';
             tg.BackButton.hide();
         }
 
