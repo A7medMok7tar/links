@@ -1157,41 +1157,48 @@
                 tg.showAlert("Please add at least one button!");
                 return;
             }
-            
+    
             if (!validateAllButtons()) {
                 tg.showAlert("Please fix validation errors before sending");
                 return;
             }
-            
+    
             tg.MainButton.showProgress(false);
-            
-            let buttonsText = [];
-            for (let i = 0; i < rows.length; i++) {
-                let rowButtons = [];
-                for (let j = 0; j < rows[i].length; j++) {
-                    let btn = rows[i][j];
-                    let btnText = `${btn.label} | ${btn.type} | ${btn.value}`;
-                    if (btn.color && btn.color !== '') {
-                        btnText += ` | ${btn.color}`;
-                    }
-                    rowButtons.push(btnText);
-                }
-                buttonsText.push(rowButtons.join(' + '));
+    
+        // Build JSON structure instead of text format
+        const buttonsData = [];
+    
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            const rowData = [];
+        
+            for (let j = 0; j < row.length; j++) {
+                const btn = row[j];
+                rowData.push({
+                    label: btn.label,
+                    type: btn.type,
+                    value: btn.value,
+                    color: btn.color || null
+                });
             }
-            
-            let finalText = buttonsText.join('\n');
-            console.log('Sending to bot:', finalText);
-            
-            try {
-                tg.sendData(finalText);
-                showToast("Sent to bot!");
-                setTimeout(() => tg.close(), 500);
-            } catch(e) {
-                tg.MainButton.hideProgress();
-                tg.showAlert("Error: " + e.message);
-                showToast("Error sending", true);
-            }
+        
+            buttonsData.push(rowData);
         }
+    
+        // Send as JSON
+        const jsonData = JSON.stringify(buttonsData);
+        console.log('Sending JSON:', jsonData);
+    
+        try {
+            tg.sendData(jsonData);
+            showToast("Sent to bot!");
+            setTimeout(() => tg.close(), 500);
+        } catch(e) {
+            tg.MainButton.hideProgress();
+            tg.showAlert("Error: " + e.message);
+            showToast("Error sending", true);
+        }
+    }
 
         loadFromStorage();
         setTimeout(() => showToast("Button Builder ready"), 500);
