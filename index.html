@@ -1187,7 +1187,8 @@
             if (initData && initData.receiver && initData.receiver.query_id) {
                 // For inline button - send to your bot's webhook endpoint
                 // You need a separate endpoint to receive this
-                fetch('/webapp-callback', {
+                const webhookUrl = 'https://156d-197-53-81-238.ngrok-free.app/webapp-callback'; // Replace with your public URL
+                fetch(webhookUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
