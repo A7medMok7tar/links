@@ -1152,47 +1152,59 @@
             if (event) event.stopPropagation();
         }
 
+        // In your Web App - replace the sendToBot() function
         function sendToBot() {
             if (rows.length === 0) {
                 tg.showAlert("Please add at least one button!");
                 return;
             }
-            
+    
             if (!validateAllButtons()) {
                 tg.showAlert("Please fix validation errors before sending");
                 return;
             }
-            
-            tg.MainButton.showProgress(false);
-            
-            let buttonsText = [];
+    
+            // Build JSON data
+            const buttonsData = [];
             for (let i = 0; i < rows.length; i++) {
-                let rowButtons = [];
+                const rowData = [];
                 for (let j = 0; j < rows[i].length; j++) {
-                    let btn = rows[i][j];
-                    let btnText = `${btn.label} | ${btn.type} | ${btn.value}`;
-                    if (btn.color && btn.color !== '') {
-                        btnText += ` | ${btn.color}`;
-                    }
-                    rowButtons.push(btnText);
+                    const btn = rows[i][j];
+                    rowData.push({
+                        label: btn.label,
+                        type: btn.type,
+                        value: btn.value,
+                        color: btn.color || null
+                    });
                 }
-                buttonsText.push(rowButtons.join(' + '));
+                buttonsData.push(rowData);
             }
-            
-            let finalText = buttonsText.join('\n');
-            console.log('Sending to bot:', finalText);
-            
-            try {
-                tg.sendData(finalText);
-                showToast("Sent to bot!");
-                setTimeout(() => tg.close(), 500);
-            } catch(e) {
-                tg.MainButton.hideProgress();
-                tg.showAlert("Error: " + e.message);
-                showToast("Error sending", true);
+    
+            const jsonData = JSON.stringify(buttonsData);
+    
+            // Check if launched via inline button (has query_id)
+            const initData = tg.initDataUnsafe;
+            if (initData && initData.receiver && initData.receiver.query_id) {
+                // For inline button - send to your bot's webhook endpoint
+                // You need a separate endpoint to receive this
+                fetch('/webapp-callback', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        query_id: initData.receiver.query_id,
+                        data: jsonData
+                    })
+                }).then(() => {
+                    tg.close();
+                }).catch(e => {
+                    tg.showAlert("Error: " + e.message);
+                });
+            } else {
+                // For keyboard button - use sendData (your current working method)
+                tg.sendData(jsonData);
+                tg.close();
             }
         }
-
         loadFromStorage();
         setTimeout(() => showToast("Button Builder ready"), 500);
     </script>
